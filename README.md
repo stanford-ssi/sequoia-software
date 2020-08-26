@@ -1,2 +1,2 @@
-# sequoia-software
+# Sequoia Software
 Sequoia flight code

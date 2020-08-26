@@ -1,0 +1,1 @@
+Adafruit CircuitPython 5.0.0-beta.2-34-g51676a0a6-dirty on 2020-02-29; PyCubedv04 with samd51j19
