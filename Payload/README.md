@@ -1,15 +1,18 @@
 ### Decentralized Payload Module ###
 
 Prerequisites:
-- Python 3.8.2 (easiest just using homebrew)
-- Redis (easiest just using homebrew)
-- Install modules in requirements.txt (Important: If you are just testing on local machine, you don't need to install 
+- Python 3.8.3 (On Mac install using homebrew, on Linux use apt) and add it to your $PATH
+- Redis (On Mac install using homebrew, on Linux use apt)
+- Navigate into this folder
+- Install virtualenv by running `python -m pip install virtualenv`
+- Create a new virtualenv by running `python -m virtualenv venv`
+- Activate the virtual environment with `. venv/bin/activate`
+- Install modules in requirements.txt by running `python -m pip install -r requirements.txt` (Important: If you are just testing on local machine, you don't need to install 
 picamera and pyserial)
-- Run redis server on default port (or change it in config.ini)
 - If testing without a raspberrypi, make sure "TEST" in config.ini is set to True.
 
 Running:
-- Run all the files ending on "...Node.py" separately in Pycharm or using separate terminal windows
+- Run all nodes by using the run_locally.sh bash script: `bash run_locally.sh`
 - Stop at any time with Control-C (cleanup is handled automatically)
 - Everything is working properly if the output of "serialOutNode.py" is part of an numpy array every five seconds if in
 test mode

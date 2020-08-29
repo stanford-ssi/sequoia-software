@@ -19,7 +19,7 @@ async def main():
         validate_json(json.loads(data))
         message = data + "\n".encode()
         if TEST:
-            print(message)
+            print(f"{message[0:10]}...")
         else:
             await loop.run_in_executor(None, device.write, message)
 
