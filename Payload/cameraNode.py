@@ -8,6 +8,7 @@ import secrets
 from datetime import datetime
 from skimage import color, io
 from random import randint
+import os
 
 TEST = config["TESTING"].getboolean("TEST")
 CAMERA = None
@@ -20,6 +21,10 @@ if not TEST:
 async def main():
     sub = await get_redis_client()
     pub = await get_redis_client()
+
+    if not os.path.exists('./images'):
+        os.mkdir('./images')
+
     pattern, = await sub.subscribe(config["CHANNELS"]["CAM-COM"])
 
     output_buffer = np.empty((config["CAMERA"].gettuple("RESOLUTION")[1], config["CAMERA"].gettuple("RESOLUTION")[0],
