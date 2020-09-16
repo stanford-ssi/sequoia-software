@@ -1,3 +1,5 @@
+from datetime import time
+
 
 class State():
     """
@@ -38,9 +40,16 @@ class IdleState(State):
         State.exit(self, machine)
 
     def update(self, machine):
+
         tumbling = False # TODO: need function to detect tumbling
         have_target = False # TODO: need function to detect if have target to reach
         take_photo = False # TODO: need function to decide when to turn on payload function
+
+        # TODO: determine attitude @GNC
+        # TODO: Detumble @GNC
+        # TODO: Send CW beacon (need continous beacon)
+        # TODO: Send telemetry data package
+        # TODO: Listen for commands
 
         if machine.get_curr_vlot_pct() < self.EXIT_VOLT:
             machine.go_to_state('lowpower')
@@ -118,8 +127,6 @@ class PayloadState(State):
     ENTER_VOLT = 0.7
     EXIT_VOLT = 0.2
 
-    def command
-
     @property
     def name(self):
         return 'payload'
@@ -131,6 +138,14 @@ class PayloadState(State):
         State.exit(self, machine)
 
     def update(self, machine):
+        # TODO: determine attitude @GNC
+        # TODO: Detumble @GNC
+        # TODO: Send CW beacon (need continous beacon)
+        # TODO: Send telemetry data package
+        # TODO: Listen for all commands (not just one)
+        # TODO: Check for RasPi messages
+        # TODO: Send RasPi messages (what?)
+
         while machine.get_curr_vlot_pct() > self.EXIT_VOLT:
             #TODO: use radio, take photos
             Done = True # TODO: need some function to determing if task finished in the payload mode
