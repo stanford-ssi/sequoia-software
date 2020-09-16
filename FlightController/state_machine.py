@@ -3,12 +3,13 @@ class StateMachine():
     """
     State Machine class
     """
-    def __init__(self):
+    def __init__(self, cubesat):
         self.state = None # the current state
         self.states = {} # dict containing all the states
         self.sensors_old = [0,0,0,0,0,0,0,0,0] # previous sensor measurements
         self.sensors = self.sensors_old # current sensor measurements
         self.cmd = [0,0,0] # current commanded dipole
+        self.cubesat = cubesat
 
     def add_state(self, state):
         self.states[state.name] = state
@@ -26,6 +27,7 @@ class StateMachine():
 
         if self.state:
             self.state.update(self)
+            self.state.transition(self)
 
         # passthrough_msg("free heap space: {}".format(gc.mem_free()))
         # if gc.mem_free() < 10000:

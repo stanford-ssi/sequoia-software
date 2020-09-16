@@ -1,25 +1,30 @@
 from datetime import time
-
-
-class State():
+class State:
     """
-    generic state class
+    Generic state parent class for operational states
     """
+    def __init__(self, transitions):
+        self.transitions = transitions
     def __init__(self):
         pass
 
     @property
     def name(self):
         return ""
-
+        print("ENTERING STATE ", self.name)
+        pass
     def enter(self, machine):
         pass
 
     def exit(self, machine):
         pass
 
-    def update(self, machine):
-        pass
+
+    def transition(self, machine):
+        for transition in self.transitions:
+            if transition.isTriggered():
+                self.machine.go_to_state(transition.end_state)
+
 
 
 
@@ -110,6 +115,7 @@ class ActuateState(State):
         Bnew = np.array(machine.sensors[0:3])
         Bdot = detumble.get_B_dot(Bold, Bnew, .1) # this is a hardcoded tstep (for now)
         machine.cmd = list(detumble.detumble_B_dot(Bnew, Bdot))
+
         '''
         while machine.get_curr_vlot_pct() > self.EXIT_VOLT:
             # TODO：calculate state estimate, dipole, actuate magnetorquer
@@ -117,15 +123,13 @@ class ActuateState(State):
             time.sleep(0.1) # update battery information & perform operation in 10 Hz
         if machine.get_curr_vlot_pct() < self.EXIT_VOLT or target_reached:
             machine.go_to_state('idle')
-        else:
-            pass
 
 class PayloadState(State):
     """
     For use of camera/radio/etc.
     """
     ENTER_VOLT = 0.7
-    EXIT_VOLT = 0.2
+    EXITState = 0.2
 
     @property
     def name(self):
@@ -133,9 +137,6 @@ class PayloadState(State):
 
     def enter(self, machine):
         State.enter(self, machine)
-
-    def exit(self, machine):
-        State.exit(self, machine)
 
     def update(self, machine):
         # TODO: determine attitude @GNC
