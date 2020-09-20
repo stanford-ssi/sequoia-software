@@ -1,4 +1,5 @@
 # Sequoia Flight Software
 
-## Onboarding Document
-https://docs.google.com/document/d/14O1TbBbstpL52qoaVQHHb_S4neMaULxE35tdIdpMXwc/
+See https://wiki.stanfordssi.org/Satellite_Software for information on the team and documentation.
+### Practice PR Names
+- Langston
