@@ -1,4 +1,3 @@
-import asyncio
 import json
 from utils import get_redis_client, config, run
 
