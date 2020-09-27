@@ -7,6 +7,7 @@ device = None
 
 if not TEST:
     import serial
+
     device = serial.Serial("/dev/serial0", 9600)
 
 
@@ -24,6 +25,7 @@ async def main():
             await pub.publish(config["CHANNELS"]["FC-IN"], data)
         else:
             print(f"Invalid serial in {msg}")
+
 
 if __name__ == "__main__":
     run(main)
