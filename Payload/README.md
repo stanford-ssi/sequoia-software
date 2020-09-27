@@ -2,19 +2,20 @@
 
 In this folder, you'll find all the code that will run on the Sequoia project payload, a Raspberry Pi 4.
 
-### Decentralized Payload Module
+## Getting Started
 
 Prerequisites:
 - Python 3.8.3 (On Mac install using homebrew, on Linux use apt) and add it to your $PATH
 - Redis (On Mac install using homebrew, on Linux use apt)
 - Navigate into this folder
-- Install virtualenv by running `python -m pip install virtualenv`
-- Create a new virtualenv by running `python -m virtualenv venv`
-- Activate the virtual environment with `. venv/bin/activate`
-- Install modules in requirements.txt by running `python -m pip install -r requirements.txt` (Important: If you are just testing on local machine, you don't need to install picamera and pyserial)
-- If testing without a raspberrypi, make sure "TEST" in config.ini is set to True.
+- Create a new virtual environment with `python -m venv .venv`
+- Activate the virtual environment with `source .venv/bin/activate`
+- Install modules in requirements.txt by running `pip install -r requirements.txt` (Important: If you are just testing on local machine, you don't need to install picamera and pyserial)
+
+### Decentralized Payload Module
 
 Running:
+- If testing without a raspberrypi, make sure "TEST" in config.ini is set to True.
 - Run all nodes by using the run_locally.sh bash script: `bash run_locally.sh`
 - Stop at any time with Control-C (cleanup is handled automatically)
 - Everything is working properly if the output of "serialOutNode.py" is part of an numpy array every five seconds if in test mode
