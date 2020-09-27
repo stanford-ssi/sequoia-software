@@ -1,7 +1,8 @@
-import aioredis
-import configparser
 import asyncio
+import configparser
 import signal
+
+import aioredis
 
 
 def parse_int_tuple(input):
