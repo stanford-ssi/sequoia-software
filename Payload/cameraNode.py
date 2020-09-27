@@ -1,14 +1,16 @@
-import numpy as np
 import asyncio
-from utils import get_redis_client, config, run
-import json
 import base64
-from skimage.transform import resize
+import json
+import os
 import secrets
 from datetime import datetime
-from skimage import color, io
 from random import randint
-import os
+
+import numpy as np
+from skimage import color, io
+from skimage.transform import resize
+
+from utils import config, get_redis_client, run
 
 TEST = config["TESTING"].getboolean("TEST")
 CAMERA = None
