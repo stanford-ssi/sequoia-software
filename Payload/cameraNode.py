@@ -10,31 +10,31 @@ import numpy as np
 from skimage import color, io
 from skimage.transform import resize
 
-from utils import config, get_redis_client, run
+import utils
 
-TEST = config["TESTING"].getboolean("TEST")
+TEST = utils.config["TESTING"].getboolean("TEST")
 CAMERA = None
 
 if not TEST:
     import picamera
 
     CAMERA = picamera.PiCamera()
-    CAMERA.resolution = config["CAMERA"].gettuple("RESOLUTION")
+    CAMERA.resolution = utils.config["CAMERA"].gettuple("RESOLUTION")
 
 
 async def main():
-    sub = await get_redis_client()
-    pub = await get_redis_client()
+    sub = await utils.get_redis_client()
+    pub = await utils.get_redis_client()
 
     if not os.path.exists("./images"):
         os.mkdir("./images")
 
-    (pattern,) = await sub.subscribe(config["CHANNELS"]["CAM-COM"])
+    (pattern,) = await sub.subscribe(utils.config["CHANNELS"]["CAM-COM"])
 
     output_buffer = np.empty(
         (
-            config["CAMERA"].gettuple("RESOLUTION")[1],
-            config["CAMERA"].gettuple("RESOLUTION")[0],
+            utils.config["CAMERA"].gettuple("RESOLUTION")[1],
+            utils.config["CAMERA"].gettuple("RESOLUTION")[0],
             3,
         ),
         dtype=np.float64,
@@ -43,7 +43,7 @@ async def main():
     while await pattern.wait_message():
         data = await pattern.get()
         message = json.loads(data)
-        if message["command"] == config["COMMANDS"]["TAKE-IMG"]:
+        if message["command"] == utils.config["COMMANDS"]["TAKE-IMG"]:
             print("Taking IMG")
             if TEST:
                 if randint(0, 1):
@@ -59,10 +59,10 @@ async def main():
             )
             print(f"Cropped to {image_resized.shape}")
             message["data"] = base64.b64encode(image_resized).decode()
-            await pub.publish_json(config["CHANNELS"]["CAM-RES"], message)
+            await pub.publish_json(utils.config["CHANNELS"]["CAM-RES"], message)
         else:
             print(f"Unknown camera command {message}")
 
 
 if __name__ == "__main__":
-    run(main)
+    utils.run(main)
