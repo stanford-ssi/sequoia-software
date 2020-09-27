@@ -7,12 +7,13 @@ device = None
 
 if not TEST:
     import serial
+
     device = serial.Serial("/dev/serial0", 9600)
 
 
 async def main():
     sub = await get_redis_client()
-    pattern, = await sub.subscribe(config["CHANNELS"]["FC-OUT"])
+    (pattern,) = await sub.subscribe(config["CHANNELS"]["FC-OUT"])
     loop = asyncio.get_event_loop()
     while await pattern.wait_message():
         data = await pattern.get()
