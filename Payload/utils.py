@@ -29,7 +29,7 @@ def validate_json(data: dict) -> bool:
         return False
 
 
-async def get_redis_client() -> aioredis.RedisConnection:
+async def get_redis_client() -> aioredis.Redis:
     return await aioredis.create_redis(config["REDIS"]["ADDRESS"])
 
 
