@@ -3,6 +3,8 @@ import json
 
 import utils
 
+logger = utils.get_sequoia_logger()
+
 TEST = utils.config["TESTING"].getboolean("TEST")
 device = None
 
@@ -21,7 +23,7 @@ async def main():
         utils.validate_json(json.loads(data))
         message = data + "\n".encode()
         if TEST:
-            print(f"{message[0:10]}...")
+            logger.info(f"{message[0:10]}...")
         else:
             await loop.run_in_executor(None, device.write, message)
 
