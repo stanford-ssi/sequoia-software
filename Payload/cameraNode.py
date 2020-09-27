@@ -12,6 +12,8 @@ from skimage.transform import resize
 
 import utils
 
+logger = utils.get_sequoia_logger()
+
 TEST = utils.config["TESTING"].getboolean("TEST")
 CAMERA = None
 
@@ -44,7 +46,7 @@ async def main():
         data = await pattern.get()
         message = json.loads(data)
         if message["command"] == utils.config["COMMANDS"]["TAKE-IMG"]:
-            print("Taking IMG")
+            logger.info("Taking IMG")
             if TEST:
                 if randint(0, 1):
                     output_buffer = io.imread("Earth_1.png")
@@ -57,11 +59,11 @@ async def main():
                 f"./images/{datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')}--{secrets.token_urlsafe(10)}.png",
                 image_resized,
             )
-            print(f"Cropped to {image_resized.shape}")
+            logger.info(f"Cropped to {image_resized.shape}")
             message["data"] = base64.b64encode(image_resized).decode()
             await pub.publish_json(utils.config["CHANNELS"]["CAM-RES"], message)
         else:
-            print(f"Unknown camera command {message}")
+            logger.warning(f"Unknown camera command {message}")
 
 
 if __name__ == "__main__":
