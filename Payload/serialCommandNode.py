@@ -6,7 +6,9 @@ from utils import get_redis_client, config, run
 async def main():
     sub = await get_redis_client()
     pub = await get_redis_client()
-    pattern, = await sub.subscribe(config["CHANNELS"]["FC-IN"])  # read all channels prefixed with `SOME_`
+    (pattern,) = await sub.subscribe(
+        config["CHANNELS"]["FC-IN"]
+    )  # read all channels prefixed with `SOME_`
 
     while await pattern.wait_message():
         data = await pattern.get()

@@ -8,7 +8,9 @@ import numpy as np
 async def main():
     sub = await get_redis_client()
     pub = await get_redis_client()
-    pattern, = await sub.subscribe(config["CHANNELS"]["CAM-RES"])  # read all channels prefixed with `SOME_`
+    (pattern,) = await sub.subscribe(
+        config["CHANNELS"]["CAM-RES"]
+    )  # read all channels prefixed with `SOME_`
 
     while await pattern.wait_message():
         data = await pattern.get()
@@ -20,7 +22,7 @@ async def main():
         # run model inference here
         print(img.tolist()[0:30])
 
-        #change out message once inference is implemented
+        # change out message once inference is implemented
         await pub.publish(config["CHANNELS"]["FC-OUT"], data)
         await asyncio.sleep(1)
 
