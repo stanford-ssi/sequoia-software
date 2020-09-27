@@ -1,3 +1,7 @@
+# Payload
+
+In this folder, you'll find all the code that will run on the Sequoia project payload, a Raspberry Pi 4.
+
 ### Decentralized Payload Module
 
 Prerequisites:
