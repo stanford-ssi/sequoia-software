@@ -1,5 +1,6 @@
 import asyncio
 import configparser
+import logging
 import signal
 
 import aioredis
@@ -11,6 +12,14 @@ def parse_int_tuple(input):
 
 config = configparser.ConfigParser(converters={"tuple": parse_int_tuple})
 config.read("config.ini")
+
+
+def get_sequoia_logger() -> logging.Logger:
+    """Get a logging object with Sequoia-specific settings."""
+    logging.basicConfig(
+        format="[%(asctime)s] %(levelname)s %(module)s.%(funcName)s.%(lineno)d %(message)s"
+    )
+    return logging.getLogger()
 
 
 def validate_json(data: dict) -> bool:
