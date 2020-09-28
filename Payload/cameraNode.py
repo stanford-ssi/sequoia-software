@@ -7,7 +7,7 @@ from datetime import datetime
 from random import randint
 
 import numpy as np
-from skimage import color, io
+from skimage import io
 from skimage.transform import resize
 
 import utils
@@ -53,15 +53,25 @@ async def main():
                 else:
                     output_buffer = io.imread("Earth_2.png")
             else:
-                await loop.run_in_executor(None, CAMERA.capture, output_buffer, "rgb")
-            image_resized = resize(output_buffer, (300, 300, 4), anti_aliasing=True)
+                await loop.run_in_executor(
+                    None,
+                    CAMERA.capture,
+                    output_buffer,
+                    "rgb"
+                )
+            image_resized = resize(
+                output_buffer, (300, 300, 4), anti_aliasing=True)
+            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
             io.imsave(
-                f"./images/{datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')}--{secrets.token_urlsafe(10)}.png",
+                f"./images/{timestamp}--{secrets.token_urlsafe(10)}.png",
                 image_resized,
             )
             logger.info(f"Cropped to {image_resized.shape}")
             message["data"] = base64.b64encode(image_resized).decode()
-            await pub.publish_json(utils.config["CHANNELS"]["CAM-RES"], message)
+            await pub.publish_json(
+                utils.config["CHANNELS"]["CAM-RES"],
+                message
+            )
         else:
             logger.warning(f"Unknown camera command {message}")
 
