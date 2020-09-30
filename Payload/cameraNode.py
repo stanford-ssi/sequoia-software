@@ -1,38 +1,42 @@
-import numpy as np
 import asyncio
-from utils import get_redis_client, config, run
-import json
 import base64
-from skimage.transform import resize
+import json
+import os
 import secrets
 from datetime import datetime
-from skimage import color, io
 from random import randint
-import os
 
-TEST = config["TESTING"].getboolean("TEST")
+import numpy as np
+from skimage import io
+from skimage.transform import resize
+
+import utils
+
+logger = utils.get_sequoia_logger()
+
+TEST = utils.config["TESTING"].getboolean("TEST")
 CAMERA = None
 
 if not TEST:
     import picamera
 
     CAMERA = picamera.PiCamera()
-    CAMERA.resolution = config["CAMERA"].gettuple("RESOLUTION")
+    CAMERA.resolution = utils.config["CAMERA"].gettuple("RESOLUTION")
 
 
 async def main():
-    sub = await get_redis_client()
-    pub = await get_redis_client()
+    sub = await utils.get_redis_client()
+    pub = await utils.get_redis_client()
 
     if not os.path.exists("./images"):
         os.mkdir("./images")
 
-    (pattern,) = await sub.subscribe(config["CHANNELS"]["CAM-COM"])
+    (pattern,) = await sub.subscribe(utils.config["CHANNELS"]["CAM-COM"])
 
     output_buffer = np.empty(
         (
-            config["CAMERA"].gettuple("RESOLUTION")[1],
-            config["CAMERA"].gettuple("RESOLUTION")[0],
+            utils.config["CAMERA"].gettuple("RESOLUTION")[1],
+            utils.config["CAMERA"].gettuple("RESOLUTION")[0],
             3,
         ),
         dtype=np.float64,
@@ -41,26 +45,36 @@ async def main():
     while await pattern.wait_message():
         data = await pattern.get()
         message = json.loads(data)
-        if message["command"] == config["COMMANDS"]["TAKE-IMG"]:
-            print("Taking IMG")
+        if message["command"] == utils.config["COMMANDS"]["TAKE-IMG"]:
+            logger.info("Taking IMG")
             if TEST:
                 if randint(0, 1):
                     output_buffer = io.imread("Earth_1.png")
                 else:
                     output_buffer = io.imread("Earth_2.png")
             else:
-                await loop.run_in_executor(None, CAMERA.capture, output_buffer, "rgb")
-            image_resized = resize(output_buffer, (300, 300, 4), anti_aliasing=True)
+                await loop.run_in_executor(
+                    None,
+                    CAMERA.capture,
+                    output_buffer,
+                    "rgb"
+                )
+            image_resized = resize(
+                output_buffer, (300, 300, 4), anti_aliasing=True)
+            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
             io.imsave(
-                f"./images/{datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')}--{secrets.token_urlsafe(10)}.png",
+                f"./images/{timestamp}--{secrets.token_urlsafe(10)}.png",
                 image_resized,
             )
-            print(f"Cropped to {image_resized.shape}")
+            logger.info(f"Cropped to {image_resized.shape}")
             message["data"] = base64.b64encode(image_resized).decode()
-            await pub.publish_json(config["CHANNELS"]["CAM-RES"], message)
+            await pub.publish_json(
+                utils.config["CHANNELS"]["CAM-RES"],
+                message
+            )
         else:
-            print(f"Unknown camera command {message}")
+            logger.warning(f"Unknown camera command {message}")
 
 
 if __name__ == "__main__":
-    run(main)
+    utils.run(main)
