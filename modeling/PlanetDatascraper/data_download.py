@@ -38,7 +38,7 @@ Instructions: Fill in personal API Key
 PLANET_API_KEY = "185c76df022f42ce964cf826d5ca3730"  # personal Planet API acess key
 
 """
-Instructions: choose number of images desired to activate and download -- 
+Instructions: choose number of images desired to activate and download --
 if going too slow increase multiprocessing chains number
 """
 # number images to download from id set OR True to download all images (after 150, just use True)
