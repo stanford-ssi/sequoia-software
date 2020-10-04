@@ -5,3 +5,4 @@ See <https://wiki.stanfordssi.org/Satellite_Software> for information on the tea
 - Langston
 - Arnav
 - Lilly
+- Yash
