@@ -5,19 +5,16 @@ Planet API Scraping Script
 May 2020
 """
 
-import numpy as np
-import os
-import sys
 import json
-import requests
-import geojsonio
-import time
-from multiprocessing.dummy import Pool as ThreadPool
-from retrying import retry
-import pdb
-from PIL import Image
-import gdal
+import os
 import subprocess
+from multiprocessing.dummy import Pool as ThreadPool
+
+import gdal
+import numpy as np
+import requests
+from PIL import Image
+from retrying import retry
 
 """
 User Global Inputs:
@@ -41,10 +38,13 @@ Instructions: Fill in personal API Key
 PLANET_API_KEY = "185c76df022f42ce964cf826d5ca3730"  # personal Planet API acess key
 
 """
-Instructions: choose number of images desired to activate and download -- if going too slow increase multiprocessing chains number
+Instructions: choose number of images desired to activate and download -- 
+if going too slow increase multiprocessing chains number
 """
-number_images = True  # number images to download from id set OR True to download all images (after 150, just use True)
-number_multiprocessing = 30  # keep less than half of number_images when large image batches
+# number images to download from id set OR True to download all images (after 150, just use True)
+number_images = True
+# keep less than half of number_images when large image batches
+number_multiprocessing = 30
 
 image_width_height = 256
 square_split_ratio = 1  # splits image into this many square images
@@ -65,8 +65,8 @@ square_split_ratio = 8
 # square_split_ratio = 9
 
 # do not use for now
-####item_types = ["SkySatCollect"] #SkySat
-####square_split_ratio = 7
+# item_types = ["SkySatCollect"] #SkySat
+# square_split_ratio = 7
 
 
 """
@@ -79,7 +79,7 @@ path_image_folder = '/Users/flynn/cs230/planet/data/batch2/images/'
 if not os.path.exists(path_image_folder):
     os.makedirs(path_image_folder)
 
-###Filters:
+# Filters:
 
 """
 Instructions: Filters --- change date data to desired range (some dates are older than sat coverage)
@@ -191,7 +191,7 @@ def main():
 
     # begin and authenticate session
     session.auth = (PLANET_API_KEY, "")
-    if (redo_id_search):
+    if redo_id_search:
         # create a saved search with filters specified
         saved_search = session.post(
             'https://api.planet.com/data/v1/searches/',
@@ -227,7 +227,7 @@ def main():
     print("Creating truncated array for activation...")
 
     with open(path_and_name_of_id_list) as f:
-        if (number_images == True):
+        if number_images:
             item_ids = f.read().splitlines()[:]  # only grab specified amount of images
         else:
             item_ids = f.read().splitlines()[:number_images]  # only grab specified amount of images
@@ -245,7 +245,7 @@ def main():
     print("FINISHED :)\n")
 
 
-###Helper Functions:
+# Helper Functions:
 
 """
 Function to download asset files
@@ -295,7 +295,7 @@ def pl_download(url, index, saved_json, filename=None):
             for x in range(xmin, xmax, tile_width):
                 for y in range(ymin, ymax, tile_height):
                     file_name = src_path[:-3] + '_{}_{}.tif'.format(x, y)
-                    if (not os.path.exists(file_name)):
+                    if not os.path.exists(file_name):
                         gdalwarp('-te', str(x), str(y), str(x + tile_width),
                                  str(y + tile_height), '-multi', '-wo', 'NUM_THREADS=ALL_CPUS',
                                  '-wm', '500', src_path, file_name)
@@ -305,7 +305,7 @@ def pl_download(url, index, saved_json, filename=None):
                     if (not (np.all(np.asarray(im.split()[-1])))):
                         os.remove(file_name)
                     else:
-                        ## save square json info in txt file
+                        # save square json info in txt file
                         info = saved_json[index]
                         data = gdal.Open(file_name)
                         info['geometry'] = [gdal.Info(data, format='json')['wgs84Extent'],
@@ -321,7 +321,7 @@ def pl_download(url, index, saved_json, filename=None):
                                         abs(location[0]) > abs(corners[2][0])) and
                                         (abs(location[1]) < abs(corners[0][1])) and (
                                                 abs(location[1]) > abs(corners[2][1]))):
-                                    ##resize image for deep learning
+                                    #   resize image for deep learning
                                     im = im.resize((image_width_height, image_width_height), Image.LANCZOS)
                                     im = im.convert("RGB")
                                     im.save(file_name[:-4] + '_' + location_labels[name_index] + '.jpg', "JPEG",
@@ -333,7 +333,7 @@ def pl_download(url, index, saved_json, filename=None):
                                 name_index += 1
                                 # save empty text file for negative results
                         else:
-                            ##resize image for deep learning
+                            # resize image for deep learning
                             im = im.resize((image_width_height, image_width_height), Image.LANCZOS)
                             im = im.convert("RGB")
                             im.save(file_name[:-3] + 'jpg', "JPEG", quality=100)
