@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
-response = requests.get("https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data");
+response = requests.get("https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data")
 
 if response.status_code != 200:
     print(f"ERROR: Request returned error code {response.status_code}")
@@ -17,7 +17,7 @@ first_table = tables[2]
 label_objs = first_table.tbody.tr.find_all('th')[1:]
 labels = ['Biome']
 labels.extend([x.strong.string for x in label_objs])
-df = pd.DataFrame(columns = labels)
+df = pd.DataFrame(columns=labels)
 
 # Add every row from the website table to DF
 tot_rows = 0
@@ -37,5 +37,4 @@ for table in tables[2:]:
         tot_rows += 1
 
 # Export to CSV
-df.to_csv('./data.csv', index = False)
-
+df.to_csv('./data.csv', index=False)

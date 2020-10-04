@@ -1,6 +1,5 @@
-from scene_ids import scene_ids
 import os
-import pandas as pd 
+import pandas as pd
 
 # Downloads a list of images from a csv file
 # Assumes web_scraper.py has been run
@@ -16,4 +15,3 @@ for scene_id in scene_ids:
     # Use OS utils to download and unpack images
     os.system(f"curl https://landsat.usgs.gov/cloud-validation/cca_l8/{scene_id}.tar.gz --output {filename}")
     os.system(f"tar -xzf {filename} -C /data/scenes")
-
