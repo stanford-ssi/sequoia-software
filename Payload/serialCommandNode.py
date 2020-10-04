@@ -3,6 +3,9 @@ import json
 import utils
 
 
+logger = utils.get_sequoia_logger()
+
+
 async def main():
     sub = await utils.get_redis_client()
     pub = await utils.get_redis_client()
@@ -14,10 +17,10 @@ async def main():
         data = await pattern.get()
         message = json.loads(data)
         if message["command"] == utils.config["COMMANDS"]["TAKE-IMG"]:
-            print(f"Got valid message {message}")
+            logger.info(f"Got valid message {message}")
             await pub.publish(utils.config["CHANNELS"]["CAM-COM"], data)
         else:
-            print(f"Unknown serial command {message}")
+            logger.warning(f"Unknown serial command {message}")
 
 
 if __name__ == "__main__":
