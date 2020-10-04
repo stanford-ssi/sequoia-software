@@ -12,7 +12,7 @@ raw_data = response.text
 soup = BeautifulSoup(raw_data, 'html.parser')
 tables = soup.find_all('table')
 
-# Initialize DF 
+# Initialize DF
 first_table = tables[2]
 label_objs = first_table.tbody.tr.find_all('th')[1:]
 labels = ['Biome']
