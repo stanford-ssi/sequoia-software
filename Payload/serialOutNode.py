@@ -1,8 +1,11 @@
 import asyncio
 import json
-from utils import get_redis_client, validate_json, config, run
 
-TEST = config["TESTING"].getboolean("TEST")
+import utils
+
+logger = utils.get_sequoia_logger()
+
+TEST = utils.config["TESTING"].getboolean("TEST")
 device = None
 
 if not TEST:
@@ -12,18 +15,18 @@ if not TEST:
 
 
 async def main():
-    sub = await get_redis_client()
-    (pattern,) = await sub.subscribe(config["CHANNELS"]["FC-OUT"])
+    sub = await utils.get_redis_client()
+    (pattern,) = await sub.subscribe(utils.config["CHANNELS"]["FC-OUT"])
     loop = asyncio.get_event_loop()
     while await pattern.wait_message():
         data = await pattern.get()
-        validate_json(json.loads(data))
+        utils.validate_json(json.loads(data))
         message = data + "\n".encode()
         if TEST:
-            print(f"{message[0:10]}...")
+            logger.info(f"{message[0:10]}...")
         else:
             await loop.run_in_executor(None, device.write, message)
 
 
 if __name__ == "__main__":
-    run(main)
+    utils.run(main)
