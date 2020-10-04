@@ -5,7 +5,7 @@ import pandas as pd
 response = requests.get("https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data");
 
 if response.status_code != 200:
-    printf(f"ERROR: Request returned error code {response.status_code}")
+    print(f"ERROR: Request returned error code {response.status_code}")
     quit()
 
 raw_data = response.text
