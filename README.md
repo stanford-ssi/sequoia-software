@@ -4,3 +4,4 @@ See <https://wiki.stanfordssi.org/Satellite_Software> for information on the tea
 ## Practice PR Names
 - Langston
 - Arnav
+- Lilly
