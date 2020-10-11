@@ -47,7 +47,7 @@ Oops, we aren't allowed to edit the file! That is because the file is in use by 
 and then save with `ctrl-s` ("save") or `ctrl-o` ("write out", for this option you will be prompted for a name). Then `ctrl-x` to exit.
 
 <p align="center">
-  <img src="assets/dataplicity/save.png" width="900"><br>
+  <img src="assets/dataplicity/nano_save.png" width="900"><br>
   <br><br>
 </p>
 
