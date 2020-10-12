@@ -36,7 +36,7 @@ $ porthole device:terminal DEVICE_ID
   <br><br>
 </p>
 
-Here, you have all the options that were accessible from the web client.
+In this Porthole interface, **you have all the options that were accessible from the web client** (and were covered in [tutorial 1](tutorial_dataplicity_1.md))
 
 
 ---------------------------------------
