@@ -8,7 +8,7 @@ Install the software and plug the SD card into your computer.
 Select the `Raspberry Pi OS (other)` and then `Raspberry Pi OS Lite` (without all the extra software)
 
 <p align="center">
-  <img src="assets/rpi/image_select.png" width="900"><br>
+  <img src="../assets/rpi/image_select.png" width="900"><br>
   <br><br>
 </p>
 
@@ -16,7 +16,7 @@ Select the `Raspberry Pi OS (other)` and then `Raspberry Pi OS Lite` (without al
 Select the SD card in the Raspberry Pi Imager software, and then click `write` when you are ready!
 
 <p align="center">
-  <img src="assets/rpi/imager.png" width="900"><br>
+  <img src="../assets/rpi/imager.png" width="900"><br>
   <br><br>
 </p>
 
@@ -24,7 +24,7 @@ Select the SD card in the Raspberry Pi Imager software, and then click `write` w
 Make a file on the SD card named `ssh` (with no extension). This will allow you to connect to your Raspberry Pi remotely once you have flashed the operating system. 
 
 <p align="center">
-  <img src="assets/rpi/boot_folder.png" width="900"><br>
+  <img src="../assets/rpi/boot_folder.png" width="900"><br>
   <br><br>
 </p>
 
