@@ -18,9 +18,10 @@ Select the `Sequoia` Raspberry Pi:
   <br><br>
 </p>
 
-The PyCubed drive is mounted at `/media/PYCUBED`. In the web view here, there are a number of software tools available to you, such as the ability to reboot, in the right column. All of the unix tools installed on the Raspberry Pi are somewhat accessble to you-- you can use the `nano` text editor but you can't scp from your computer to the Raspberry Pi in this interface.
+The PyCubed drive is mounted at `/media/PYCUBED`. In the web view here, there are a number of software tools available to you, such as the ability to reboot, in the right column. All of the unix tools installed on the Raspberry Pi are somewhat accessble to you--for example, you can use the `nano` text editor to edit files but you can't use the `scp` command to copy files from your computer to the Raspberry Pi in this interface.
 
-## nano example
+## Editing files on the PyCubed drive
+
 Let's edit a file on the PyCubed drive with `nano`!
 ```
 nano main.py
@@ -31,44 +32,66 @@ nano main.py
   <br><br>
 </p>
 
-`Enter` to edit the file.
+`Enter` to edit the file. Once you make your edits, type `ctrl-o` to "write" the file. Then, do `ctrl-x` to exit. 
 
 <p align="center">
-  <img src="assets/dataplicity/unwritable.png" width="900"><br>
+  <img src="assets/dataplicity/nano_main_save.png" width="900"><br>
   <br><br>
 </p>
 
-Oops, we aren't allowed to edit the file! That is because the file is in use by Circuit Python on the drive. Instead, we will edit a file on the Raspberry Pi and then copy it over!
+## Copying files to the PyCubed drive
+
+Make a file and put some stuff in it.
 
 <p align="center">
   <img src="assets/dataplicity/tmp_test.png" width="900"><br>
   <br><br>
 </p>
-and then save with `ctrl-s` ("save") or `ctrl-o` ("write out", for this option you will be prompted for a name). Then `ctrl-x` to exit.
+
+This time, let's save the file with `ctrl-s` (same as `ctrl-o` but it does not prompt for a file name).  Then `ctrl-x` to exit.
 
 <p align="center">
   <img src="assets/dataplicity/nano_save.png" width="900"><br>
   <br><br>
 </p>
 
-We can make sure we saved the file with the `cat` command (which is technically for concatenating, or combining files, but works fine for this!)
+Make sure you saved the file with the `cat` command (`cat` is technically for concatenating (combining) files, but works fine for printing them in the terminal!)
 
 <p align="center">
   <img src="assets/dataplicity/cat.png" width="900"><br>
   <br><br>
 </p>
 
-Now, we will move the file to the PyCubed with the `cp` ("copy") command:
+Now, we will move the file to the PyCubed with the `cp` ("copy") command. Syntax for this is 
+
+```
+$ cp SOURCE DESTINATION
+```
+
+For you, this would be:
+
+```
+$ cp tmp/test /media/PYCUBED/
+```
 
 <p align="center">
-  <img src="assets/dataplicity/denied.png" width="900"><br>
+  <img src="assets/dataplicity/copied.png" width="900"><br>
   <br><br>
 </p>
 
-Oops, permission denied. You need administrator privileges to write files to the 
+Print the file in your terminal with:
+
+```
+$ cat /media/PYCUBED/test
+```
+
+And then delete the file with:
+
+```
+$ rm /media/PYCUBED/test
+```
 
 Despite all of these cool things, _we don't recommend using the web interface_ because it crashes fairly often.
-
 
 ---------------------------------------
 
