@@ -7,14 +7,14 @@ https://www.dataplicity.com
 Head over to the `devices` page:
 
 <p align="center">
-  <img src="assets/dataplicity/devices.png" width="900"><br>
+  <img src="../assets/dataplicity/devices.png" width="900"><br>
   <br><br>
 </p>
 
 Select the `Sequoia` Raspberry Pi:
 
 <p align="center">
-  <img src="assets/dataplicity/pycubed_mnt.png" width="900"><br>
+  <img src="../assets/dataplicity/pycubed_mnt.png" width="900"><br>
   <br><br>
 </p>
 
@@ -28,14 +28,14 @@ nano main.py
 ```
 
 <p align="center">
-  <img src="assets/dataplicity/nano_main.png" width="900"><br>
+  <img src="../assets/dataplicity/nano_main.png" width="900"><br>
   <br><br>
 </p>
 
 `Enter` to edit the file. Once you make your edits, type `ctrl-o` to "write" the file. Then, do `ctrl-x` to exit. 
 
 <p align="center">
-  <img src="assets/dataplicity/nano_main_save.png" width="900"><br>
+  <img src="../assets/dataplicity/nano_main_save.png" width="900"><br>
   <br><br>
 </p>
 
@@ -44,21 +44,21 @@ nano main.py
 Make a file and put some stuff in it.
 
 <p align="center">
-  <img src="assets/dataplicity/tmp_test.png" width="900"><br>
+  <img src="../assets/dataplicity/tmp_test.png" width="900"><br>
   <br><br>
 </p>
 
 This time, let's save the file with `ctrl-s` (same as `ctrl-o` but it does not prompt for a file name).  Then `ctrl-x` to exit.
 
 <p align="center">
-  <img src="assets/dataplicity/nano_save.png" width="900"><br>
+  <img src="../assets/dataplicity/nano_save.png" width="900"><br>
   <br><br>
 </p>
 
 Make sure you saved the file with the `cat` command (`cat` is technically for concatenating (combining) files, but works fine for printing them in the terminal!)
 
 <p align="center">
-  <img src="assets/dataplicity/cat.png" width="900"><br>
+  <img src="../assets/dataplicity/cat.png" width="900"><br>
   <br><br>
 </p>
 
@@ -75,7 +75,7 @@ $ cp tmp/test /media/PYCUBED/
 ```
 
 <p align="center">
-  <img src="assets/dataplicity/copied.png" width="900"><br>
+  <img src="../assets/dataplicity/copied.png" width="900"><br>
   <br><br>
 </p>
 
@@ -97,4 +97,4 @@ Despite all of these cool things, _we don't recommend using the web interface_ b
 
 ## Next Steps
 
-Checkout the [next tutorial](tutorial_dataplicity_2.md) to learn how to access Dataplicity enabled Raspbery Pi's with Porthole in your desired terminal—-on your computer, _not_ in a browser!
+Checkout the [next tutorial](tutorial_2.md) to learn how to access Dataplicity enabled Raspbery Pi's with Porthole in your desired terminal—-on your computer, _not_ in a browser!

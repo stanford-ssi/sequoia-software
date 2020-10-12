@@ -1,4 +1,4 @@
-# Raspberry Pi Tutorial
+# Raspberry Pi Tutorial: Setting up a Headless Raspberry Pi
 
 Download the Raspberry Pi Imager at:
 https://www.raspberrypi.org/downloads/ 
