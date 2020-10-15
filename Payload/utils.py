@@ -1,7 +1,9 @@
-import aioredis
-import configparser
 import asyncio
+import configparser
+import logging
 import signal
+
+import aioredis
 
 
 def parse_int_tuple(input):
@@ -10,6 +12,15 @@ def parse_int_tuple(input):
 
 config = configparser.ConfigParser(converters={"tuple": parse_int_tuple})
 config.read("config.ini")
+
+
+def get_sequoia_logger() -> logging.Logger:
+    """Get a logging object with Sequoia-specific settings."""
+    logging.basicConfig(
+        level=config["LOGGING"]["LEVEL"],
+        format="[%(asctime)s] %(levelname)s %(module)s.%(funcName)s.%(lineno)d %(message)s",
+    )
+    return logging.getLogger()
 
 
 def validate_json(data: dict) -> bool:
@@ -29,7 +40,7 @@ def validate_json(data: dict) -> bool:
         return False
 
 
-async def get_redis_client() -> aioredis.RedisConnection:
+async def get_redis_client() -> aioredis.Redis:
     return await aioredis.create_redis(config["REDIS"]["ADDRESS"])
 
 
