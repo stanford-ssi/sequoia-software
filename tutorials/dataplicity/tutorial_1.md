@@ -8,11 +8,11 @@ Dataplicity.
 
 Head over to the `devices` page:
 
-![Devices](../assets/dataplicity/devices.png)
+![Devices](../../../assets/dataplicity/devices.png?raw=true)
 
 Select the `Sequoia` Raspberry Pi:
 
-![PyCubed](../assets/dataplicity/pycubed_mnt.png)
+![PyCubed](../../../assets/dataplicity/pycubed_mnt.png?raw=true)
 
 The PyCubed drive is mounted at `/media/PYCUBED`. In the web view here, there
 are a number of software tools available to you, such as the ability to reboot,
@@ -29,29 +29,29 @@ Let's edit a file on the PyCubed drive with `nano`!
 nano main.py
 ```
 
-![Nano main](../assets/dataplicity/nano_main.png)
+![Nano main](../../../assets/dataplicity/nano_main.png?raw=true)
 
 `Enter` to edit the file. Once you make your edits, type `ctrl-o` to "write" the
 file. Then, do `ctrl-x` to exit.
 
-![Nano main save](../assets/dataplicity/nano_main_save.png)
+![Nano main save](../../../assets/dataplicity/nano_main_save.png?raw=true)
 
 ## Copying files to the PyCubed drive
 
 Make a file and put some stuff in it.
 
-![Temp test](../assets/dataplicity/tmp_test.png)
+![Temp test](../../../assets/dataplicity/tmp_test.png?raw=true)
 
 This time, let's save the file with `ctrl-s` (same as `ctrl-o` but it does not
 prompt for a file name). Then `ctrl-x` to exit.
 
-![Nano save](../assets/dataplicity/nano_save.png)
+![Nano save](../../../assets/dataplicity/nano_save.png?raw=true)
 
 Make sure you saved the file with the `cat` command (`cat` is technically for
 concatenating (combining) files, but works fine for printing them in the
 terminal!)
 
-![Cat image](../assets/dataplicity/cat.png)
+![Cat image](../../../assets/dataplicity/cat.png?raw=true)
 
 Now, we will move the file to the PyCubed with the `cp` ("copy") command. Syntax
 for this is
@@ -66,7 +66,7 @@ For you, this would be:
 cp tmp/test /media/PYCUBED/
 ```
 
-![Copied](../assets/dataplicity/copied.png)
+![Copied](../../../assets/dataplicity/copied.png?raw=true)
 
 Print the file in your terminal with:
 

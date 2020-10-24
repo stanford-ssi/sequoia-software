@@ -16,13 +16,13 @@ credentials. Then, open a terminal and type:
 porthole
 ```
 
-![Porthole](../assets/dataplicity/porthole.png)
+![Porthole](../../../assets/dataplicity/porthole.png?raw=true)
 
 There are a number of options, such as login and rebooting that are accessible
 from the command line. The `forwards` command is covered in [tutorial
 3](tutorial_3.md).
 
-![Reboot](../assets/dataplicity/reboot.png)
+![Reboot](../../../assets/dataplicity/reboot.png?raw=true)
 
 To connect a remote terminal on the raspberry pi, do:
 
@@ -30,7 +30,7 @@ To connect a remote terminal on the raspberry pi, do:
 porthole device:terminal DEVICE_ID
 ```
 
-![Porthole Terminal](../assets/dataplicity/porthole_terminal.png)
+![Porthole Terminal](../../../assets/dataplicity/porthole_terminal.png?raw=true)
 
 In this Porthole interface, **you have all the options that were accessible from
 the web client** (and were covered in [tutorial 1](tutorial_1.md))
