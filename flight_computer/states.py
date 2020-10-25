@@ -12,7 +12,7 @@ class State:
 
     @property
     def name(self):
-        return 'default'
+        return "default"
 
     def enter(self):
         pass
@@ -35,7 +35,7 @@ class IdleState(State):
 
     @property
     def name(self):
-        return 'idle'
+        return "idle"
 
     def enter(self):
         super().enter()
@@ -63,7 +63,7 @@ class LowPowerState(State):
 
     @property
     def name(self):
-        return 'lowpower'
+        return "lowpower"
 
     def enter(self):
         super().enter()
@@ -82,16 +82,16 @@ class ActuateState(State):
 
     @property
     def name(self):
-        return 'actuate'
+        return "actuate"
 
     def update(self):
-        '''
+        """
         Bold = np.array(machine.sensors_old[0:3])
         Bnew = np.array(machine.sensors[0:3])
         Bdot = detumble.get_B_dot(Bold, Bnew, .1) # this is a hardcoded tstep (for now)
         machine.cmd = list(detumble.detumble_B_dot(Bnew, Bdot))
 
-        '''
+        """
         pass
 
 
@@ -102,7 +102,7 @@ class PayloadState(State):
 
     @property
     def name(self):
-        return 'payload'
+        return "payload"
 
     def update(self):
         # TODO: determine attitude @GNC
