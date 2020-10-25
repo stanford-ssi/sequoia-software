@@ -16,7 +16,7 @@ infrastructure.
   tutorial](dataplicity/tutorial_2.md)
 
 ### Circuit Python
-- [CircuitPython Tutorial 3: Screen, Cu, and the Serial Console](circuit_python/tutorial_1.md)
+- [CircuitPython Tutorial 1: Screen, Cu, and the Serial Console](circuit_python/tutorial_1.md)
 
 
 ### openOCD
