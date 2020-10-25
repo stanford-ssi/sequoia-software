@@ -39,7 +39,7 @@ def handleCommand(commandNum, data):
     if commandNum == 32:
         print("Send image command received")
         s = data.decode('utf-8').rstrip('\x00')
-        result = uart.take_image()
+        result = uart.takeImage()
         sendString(result)
 
 def setupRadio():

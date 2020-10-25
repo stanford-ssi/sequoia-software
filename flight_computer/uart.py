@@ -4,19 +4,16 @@ import time
 import digitalio
 import json
 
-uart = busio.UART(board.PB16, board.PB17, baudrate=9600, receiver_buffer_size=256)
+uart = busio.UART(board.PB16, board.PB17, baudrate=9600, receiver_buffer_size = 256)
 
-testdata = {"hello": "Moritz", "How": "AreYouDoing"}
+testdata = {"hello":"Moritz","How":"AreYouDoing"}
 
-
-def send_message(raw):
+def sendMessage(raw):
     payload = json.dumps(raw) + "\n"
-    b = bytearray()
+    b= bytearray()
     b.extend(payload)
     numBytes = uart.write(b)
-    return numBytes
-    # print("Wrote message to Pi (" + str(numBytes) + "): " + payload)
-
+    #print("Wrote message to Pi (" + str(numBytes) + "): " + payload)
 
 def listen():
     # waits until response
@@ -26,17 +23,16 @@ def listen():
             return data
 
 
-def handle_message(msg):
+def handleMessage(msg):
     result = msg.decode('utf-8')
     print(result)
 
-
-def take_image():
-    data = {"command": "take_image"}
-    send_message(data)
+def takeImage():
+    data = {"command":"take_image"}
+    sendMessage(data)
     return listen()
     # checks if bytes in UART buffer
     # Reads line of data as bytes
-    # count += 1
-    # if count % 10 == 0:
+    #count += 1
+    #if count % 10 == 0:
     #    sendMessage(testdata)
