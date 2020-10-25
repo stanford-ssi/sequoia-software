@@ -1,13 +1,11 @@
-
-from pycubed import cubesat
-
+import pycubed
 class Transition:
     """
     Transition parent class for operational state transitions
     """
   
     def __init__(self, end_state):
-        self.end_state
+        self.end_state = end_state
   
     def isTriggered(self ):
         return False
@@ -21,5 +19,6 @@ class LowPowerTransition(Transition):
 
 
   def isTriggered(self):
-    vbatt = cubesat.battery_voltage
-    return vbatt < min_voltage
+    vbatt = pycubed.cubesat.battery_voltage
+    return vbatt < self.min_voltage
+
