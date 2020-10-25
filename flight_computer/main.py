@@ -4,7 +4,8 @@ from state_machine import StateMachine
 from states import IdleState, LowPowerState
 import time
 
-MIN_VOLTAGE =5 
+MIN_VOLTAGE = 5
+
 
 def initialize_state_machine():
     # create machine object of class StateMachine and add states
@@ -18,7 +19,7 @@ def initialize_state_machine():
     # Add States
     machine.add_state(IdleState([lowPowerTransition]))
     machine.add_state(LowPowerState([highPowerTransition]))
-    
+
     # start off the StateMachine object in idle
     machine.go_to_state('idle')
     return machine
@@ -32,6 +33,7 @@ def LightDebuggingRoutine():
         cubesat.RGB(255, 0, 0)
         time.sleep(1)
         cubesat.RGB(0, 0, 255)
+
 
 if __name__ == "__main__":
     machine = initialize_state_machine()

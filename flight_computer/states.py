@@ -1,8 +1,11 @@
 import time
+
+
 class State:
     """
     Generic state parent class for operational states
     """
+
     def __init__(self, transitions):
         self.transitions = transitions
         self.machine = None
@@ -20,7 +23,6 @@ class State:
     def exit(self):
         pass
 
-
     def get_next_state(self):
         for transition in self.transitions:
             if transition.isTriggered():
@@ -33,6 +35,7 @@ class IdleState(State):
     """
     Default state for the satellite. Majority of actions occur via IdleState
     """
+
     @property
     def name(self):
         return 'idle'
@@ -44,9 +47,8 @@ class IdleState(State):
         super().exit()
 
     def update(self):
-
-        tumbling = False # TODO: need function to detect tumbling
-        have_target = False # TODO: need function to detect if have target to reach
+        tumbling = False  # TODO: need function to detect tumbling
+        have_target = False  # TODO: need function to detect if have target to reach
         print("State: Idle")
         # TODO: determine attitude @GNC
         # TODO: Detumble @GNC
@@ -61,6 +63,7 @@ class LowPowerState(State):
     """
     Low-Power mode to conserve energy
     """
+
     @property
     def name(self):
         return 'lowpower'
@@ -74,14 +77,15 @@ class LowPowerState(State):
     def update(self):
         print("State: Low power, Current Voltage", self.machine.cubesat.battery_voltage)
 
+
 class ActuateState(State):
     """
     For all actuation purposes (using magnetorquers)
     """
+
     @property
     def name(self):
         return 'actuate'
-
 
     def update(self):
         '''
@@ -93,6 +97,7 @@ class ActuateState(State):
         '''
         pass
 
+
 class PayloadState(State):
     """
     For use of camera/radio/etc.
@@ -101,7 +106,6 @@ class PayloadState(State):
     @property
     def name(self):
         return 'payload'
-
 
     def update(self):
         # TODO: determine attitude @GNC
