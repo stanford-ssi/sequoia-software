@@ -14,8 +14,7 @@ infrastructure.
   Tools](dataplicity/tutorial_1.md)
 - [Dataplicity Tutorial 2: Using Porthole from your preferred
   tutorial](dataplicity/tutorial_2.md)
-- (incomplete) [Dataplicity Tutorial 3: Port-forwarding and
-  Screen](dataplicity/tutorial_3.md)
+- [Dataplicity Tutorial 3: Screen, Cu, and the Serial Console](dataplicity/tutorial_3.md)
 
 ### openOCD
 
