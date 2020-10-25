@@ -13,15 +13,15 @@ def initialize_state_machine():
     machine.cubesat = cubesat
 
     # Initialize Transitions
-    lowPowerTransition = LowPowerTransition('lowpower', MIN_VOLTAGE)
-    highPowerTransition = HighPowerTransition('idle', MIN_VOLTAGE)
+    lowPowerTransition = LowPowerTransition("lowpower", MIN_VOLTAGE)
+    highPowerTransition = HighPowerTransition("idle", MIN_VOLTAGE)
 
     # Add States
     machine.add_state(IdleState([lowPowerTransition]))
     machine.add_state(LowPowerState([highPowerTransition]))
 
     # start off the StateMachine object in idle
-    machine.go_to_state('idle')
+    machine.go_to_state("idle")
     return machine
 
 
