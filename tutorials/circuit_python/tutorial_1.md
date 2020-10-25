@@ -1,4 +1,4 @@
-# Dataplicity Tutorial 3: Screen, Cu, and the Serial Console
+# Circuit Python Tutorial 1: Screen, Cu, and the Serial Console
 
 The PyCubed outputs its data on something called a serial USB connection. 
 This is essentially a set of wires running between the PyCubed and another
