@@ -13,12 +13,12 @@ def initialize_state_machine():
     machine.cubesat = cubesat
 
     # Initialize Transitions
-    lowPowerTransition = LowPowerTransition("lowpower", MIN_VOLTAGE)
-    highPowerTransition = HighPowerTransition("idle", MIN_VOLTAGE)
+    low_power_transition = LowPowerTransition("lowpower", MIN_VOLTAGE)
+    high_power_transition = HighPowerTransition("idle", MIN_VOLTAGE)
 
     # Add States
-    machine.add_state(IdleState([lowPowerTransition]))
-    machine.add_state(LowPowerState([highPowerTransition]))
+    machine.add_state(IdleState([low_power_transition]))
+    machine.add_state(LowPowerState([high_power_transition]))
 
     # start off the StateMachine object in idle
     machine.go_to_state("idle")
@@ -26,7 +26,7 @@ def initialize_state_machine():
 
 
 # Test in case we want to see if PYCUBED is working
-def LightDebuggingRoutine():
+def debug_routine():
     while True:
         print("PyCubed Running")
         time.sleep(1)
@@ -36,7 +36,7 @@ def LightDebuggingRoutine():
 
 
 if __name__ == "__main__":
-    machine = initialize_state_machine()
+    state_machine = initialize_state_machine()
     while True:
-        machine.update()
+        state_machine.update()
         time.sleep(1)

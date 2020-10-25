@@ -1,6 +1,3 @@
-import time
-
-
 class State:
     """
     Generic state parent class for operational states
@@ -25,7 +22,7 @@ class State:
 
     def get_next_state(self):
         for transition in self.transitions:
-            if transition.isTriggered():
+            if transition.is_triggered():
                 return transition.end_state
 
         return self.name

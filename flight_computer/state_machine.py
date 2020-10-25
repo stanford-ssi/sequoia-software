@@ -27,7 +27,7 @@ class StateMachine:
 
         self.state.update()
         next_state_name = self.state.get_next_state()
-        if next_state_name == None or next_state_name not in self.states:
+        if next_state_name is None or next_state_name not in self.states:
             print("ERROR: Received none from state machine")
         else:
             self.state = self.states[next_state_name]

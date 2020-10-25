@@ -9,17 +9,16 @@ class Transition:
     def __init__(self, end_state):
         self.end_state = end_state
 
-    def isTriggered(self):
+    def is_triggered(self):
         return False
 
 
 class LowPowerTransition(Transition):
-
     def __init__(self, end_state, min_voltage):
         super().__init__(end_state)
         self.min_voltage = min_voltage
 
-    def isTriggered(self):
+    def is_triggered(self):
         vbatt = pycubed.cubesat.battery_voltage
         return vbatt < self.min_voltage
 
@@ -29,6 +28,6 @@ class HighPowerTransition(Transition):
         super().__init__(end_state)
         self.min_voltage = min_voltage
 
-    def isTriggered(self):
+    def is_triggered(self):
         vbatt = pycubed.cubesat.battery_voltage
         return vbatt >= self.min_voltage
