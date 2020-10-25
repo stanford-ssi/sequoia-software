@@ -5,14 +5,11 @@ class State:
     """
     def __init__(self, transitions):
         self.transitions = transitions
-    def __init__(self):
-        pass
 
     @property
     def name(self):
-        return ""
         print("ENTERING STATE ", self.name)
-        pass
+
     def enter(self, machine):
         pass
 

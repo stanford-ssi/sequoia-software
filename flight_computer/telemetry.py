@@ -1,6 +1,5 @@
 import struct
-import cubesat
-
+from pycubed import cubesat
 class Packet:
     # Placeholder
     fmt = ""
@@ -9,10 +8,10 @@ class Packet:
         self.raw_data = ''
 
     def extract(self):
-        return struct.unpack(fmt, self.raw_data)
+        return struct.unpack(Packet.fmt, self.raw_data)
 
-    def initalize(self, *kwargs):
-        self.raw_data = struct.pack(fmt, kwargs)
+    def initialize(self, *kwargs):
+        self.raw_data = struct.pack(Packet.fmt, kwargs)
 
 
 class TelemetryData(Packet):
@@ -20,7 +19,7 @@ class TelemetryData(Packet):
     fmt = "<iff"
 
     def initalizeFromSensors(self):
-        super.insert(self, 5, cubesat.temperature_cpu, cubesat.current_draw)
+        super.initialize(self, 5, cubesat.temperature_cpu, cubesat.current_draw)
 
 class Command(Packet):
     """Magic number, command number, and arbitrary JSON text of command"""

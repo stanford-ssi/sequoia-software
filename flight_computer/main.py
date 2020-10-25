@@ -1,7 +1,7 @@
 from pycubed import cubesat
 from transitions import LowPowerTransition
 from state_machine import StateMachine
-from states import IdleState, DetumbleState
+from states import IdleState, LowPowerState
 
 MIN_VOLTAGE = 0.3
 
@@ -10,7 +10,7 @@ def initialize_state_machine():
     machine = StateMachine(cubesat)
     lowPowerTransition = LowPowerTransition('lowpower', MIN_VOLTAGE)
     machine.add_state(IdleState([lowPowerTransition]))
-    machine.add_state(DetumbleState([]))
+    machine.add_state(LowPowerState())
 
     machine.cubesat = cubesat
 

@@ -23,7 +23,7 @@ class StateMachine():
     def update(self):
         # publish command input to magnetorquers and poll sensors
         self.sensors_old = self.sensors
-        self.sensors = sim_communicate(self.cmd)
+        #self.sensors = sim_communicate(self.cmd)
 
         if self.state:
             self.state.update(self)
