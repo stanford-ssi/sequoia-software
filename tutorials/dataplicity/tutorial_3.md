@@ -1,41 +1,41 @@
 # Dataplicity Tutorial 3: Screen, Cu, and the Serial Console
 
-The PyCubed outputs it's data on something called a serial USB connection. 
-This is essentially a set of wires running between the PyCubed and whatever
-computer it's running from. This is how we see the PyCubed's output
-and can even provide it input. 
+The PyCubed outputs its data on something called a serial USB connection. 
+This is essentially a set of wires running between the PyCubed and another
+computer (currently, a Raspberry Pi). This is how we can see PyCubed's output.
 
 ## Reading the Serial Connection
 
-On a unix system, we can access serial connections with files in the /dev folder. 
-On Linux, Pycubed generally shows up as /dev/ttyACM0. This looks like a normal file, but 
+On a Unix system, we can access serial connections with files in the `/dev` folder. 
+On Linux, Pycubed generally shows up as `/dev/ttyACM0`. From the terminal, it looks like a normal file, but 
 reading and writing to it is equivalent to sending bytes on the serial 
-connection.  
+connection. 
 
 Some other interesting links if you want to learn more about how
-tty works under the hood. \
-[What is a tty on linux and how to use the tty command](https://www.howtogeek.com/428174/what-is-a-tty-on-linux-and-how-to-use-the-tty-command/).\
+TTY works under the hood. \
+[What is a TTY on Linux and How to Use the TTY Command](https://www.howtogeek.com/428174/what-is-a-tty-on-linux-and-how-to-use-the-tty-command/).\
 [Terminal Special Files: /dev/tty etc.](http://ftp.lyx.org/pub/sgml-tools/website/HOWTO/Text-Terminal-HOWTO/t1162.html)\
 [Difference between tty and ttyACM](https://rfc1149.net/blog/2013/03/05/what-is-the-difference-between-devttyusbx-and-devttyacmx/)
 
 ## Screen
 
 How do we actually read and write from the serial interface? There
-are several programs that can help us do this, like screen, minicom, stty, and cu. To access the terminal, 
+are several shell programs that can help us do this, like `screen`, `minicom`, `picocom`, `stty`, and `cu`. One of the most popular is screen. 
+Screen is already installed on the Raspberry Pi. To access the terminal with it, 
 simply run 
 ```bash
 screen /dev/ttyACM0 115200
 ```
-Usually this is unnecessary, however. Exit screen with `Ctrl+a, \` (pressing ctrl-a, releasing it, then pressing the \ key). 
+Exit screen with `Ctrl+a, \` (pressing `Ctrl + A`, releasing it, then pressing the \ key). 
 If screen has trouble starting up, try pressing return or `Ctrl + D` a couple times until you start seeing output.
-**Make sure to exit screen when you're done**
+**Make sure to exit screen when you're done.**
 
-Another cool screen feature is detaching and reattaching the terminal. You can type `Ctrl+a, d` to dettach the 
-screen session. You can then do things like edit files, and reopen screen just by running
+Another cool screen feature is detaching and reattaching the terminal. You can type `Ctrl + A, d` to dettach the 
+screen session. You can then do other things like edit files, and reopen the same screen session just by running
 ```
 screen -r
 ```
-If you do this, don't leave it deattached, or the next person will have trouble using screen! You can see full instructions on how 
+If you do detach the screen session, don't leave it deattached, or the next person will have trouble using screen! You can see full instructions on how 
 to use screen by typing 
 ```
 man screen
@@ -51,7 +51,7 @@ To use it, simply run the command
 ```bash
 cu -l /dev/ttyACM0
 ```
-Exiting is done by typing `~.`**Make sure to exit Cu when you're done**
+Exiting is done by typing `~.`**Make sure to exit Cu when you're done.**
 
 ## Troubleshooting
 Only one person can be running screen or cu at the same time. If the screen gives the output ```[screen is terminating]``` 
@@ -68,25 +68,23 @@ screen -r
 ```
 This will reattach a deteached screen session, and should allow you to regain control. Otherwise, run 
 ```
-pskill screen
+pkill screen && pkill cu
 ```
-and
-```
-pskill cu
-```
-These commands might require sudo permissions, so if you don't have sudo access, ping someone who does. 
+These commands might require sudo permissions, so if you don't have administrator access, ping someone who does. 
 
 ## Mu (Not on Dataplicity)
 
 Mu is a GUI editor made specifically for working with CircuitPython. It's educational, so it has very few features of a standard IDE.  
-However, it has several useful features, including accessing the REPL and printing the terminal output. This makes it very easy
-to work with CircuitPython boards locally, and eliminates the need to manually use screen or cu. You can find the Mu documentation
+However, Mu makes it very easy to access the REPL and see the terminal output. This makes it very easy
+to work with CircuitPython boards locally, and eliminates the need to use screen or cu. You can find the Mu documentation
 [here](https://codewith.mu)
 
 ## The Serial Console and the REPL
-Once you've actually connected to the PyCubed, either with Cu or Screen, you interact with what's known as the serial console. 
-This is the main way of interacting with running CircuitPython devices. You should see the output of your program on 
-the screen. This output will automatically refresh every time you edit the file. I would recommend reading the [CircuitPython](https://learn.adafruit.com/welcome-to-circuitpython/interacting-with-the-serial-console)
+Once you've actually connected to the PyCubed, either with `cu` or `screen`, you interact with what's known as the serial console. 
+This is the main way of interacting with running CircuitPython devices.
+
+When the serial console first starts, you should see the output of the CircuitPython program. The program will automatically 
+restart every time you edit a file. The [CircuitPython documentation](https://learn.adafruit.com/welcome-to-circuitpython/interacting-with-the-serial-console) contains detailed information on how to use the serial console. 
 
 You can also manually restart the program. Simply use the shortcut `Ctrl + C` to stop the running program, then 
 press `Ctrl + D` to reload it. From this point, you can also enter the REPL. The REPL is a CircuitPython feature that
