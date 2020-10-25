@@ -44,8 +44,8 @@ class IdleState(State):
         super().exit()
 
     def update(self):
-        tumbling = False  # TODO: need function to detect tumbling
-        have_target = False  # TODO: need function to detect if have target to reach
+        # TODO: need function to detect tumbling
+        # TODO: need function to detect if have target to reach
         print("State: Idle")
         # TODO: determine attitude @GNC
         # TODO: Detumble @GNC
