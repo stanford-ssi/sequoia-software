@@ -87,7 +87,7 @@ When the serial console first starts, you should see the output of the CircuitPy
 restart every time you edit a file. The [CircuitPython documentation](https://learn.adafruit.com/welcome-to-circuitpython/interacting-with-the-serial-console) contains detailed information on how to use the serial console. 
 
 You can also manually restart the program. Simply use the shortcut `Ctrl + C` to stop the running program, then 
-press `Ctrl + D` to reload it. From this point, you can also enter the REPL. The REPL is a CircuitPython feature that
+press `Ctrl + D` to reload it. From this point, you can also enter the REPL, or **R**ead-**E**valuate-**P**rint-**L**oop. The REPL is a CircuitPython feature that
 allows you to run python line by line, and see results in real time. To enter the REPL, 
 stop the running program with `Ctrl + C` and press any key. You can read more details about how to use the REPL on the CircuitPython website [here](https://learn.adafruit.com/welcome-to-circuitpython/the-repl). 
 
