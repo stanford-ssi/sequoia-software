@@ -20,23 +20,23 @@ TTY works under the hood. \
 ## Screen
 
 How do we actually read and write from the serial interface? There
-are several shell programs that can help us do this, like `screen`, `minicom`, `picocom`, `stty`, and `cu`. One of the most popular is screen. 
-Screen is already installed on the Raspberry Pi. To access the terminal with it, 
+are several shell programs that can help us do this, like `screen`, `minicom`, `picocom`, `stty`, and `cu`. One of the most popular is `screen`. 
+`screen` is already installed on the Raspberry Pi. To access the terminal with it, 
 simply run 
 ```bash
 screen /dev/ttyACM0 115200
 ```
-Exit screen with `Ctrl+a, \` (pressing `Ctrl + A`, releasing it, then pressing the \ key). 
-If screen has trouble starting up, try pressing return or `Ctrl + D` a couple times until you start seeing output.
+Exit `screen` with `Ctrl+a, \` (pressing `Ctrl + A`, releasing it, then pressing the \ key). 
+If `screen` has trouble starting up, try pressing return or `Ctrl + D` a couple times until you start seeing output.
 **Make sure to exit screen when you're done.**
 
-Another cool screen feature is detaching and reattaching the terminal. You can type `Ctrl + A, d` to dettach the 
-screen session. You can then do other things like edit files, and reopen the same screen session just by running
+Another cool `screen` feature is detaching and reattaching the terminal. You can type `Ctrl + A, d` to dettach the 
+`screen` session. You can then do other things like edit files, and reopen the same `screen` session just by running
 ```
 screen -r
 ```
-If you do detach the screen session, don't leave it deattached, or the next person will have trouble using screen! You can see full instructions on how 
-to use screen by typing 
+If you do detach the `screen` session, don't leave it deattached, or the next person will have trouble using `screen`! You can see full instructions on how 
+to use `screen` by typing 
 ```
 man screen
 ```
@@ -46,7 +46,7 @@ The [official PyCubed documentation](https://www.notion.so/Accessing-the-Serial-
 
 ## Cu
 
-Cu is another alternative to screen. I personally think it works a little better and is a little easier to use. 
+`cu` is another alternative to `screen`. I personally think it works a little better and is a little easier to use. 
 To use it, simply run the command
 ```bash
 cu -l /dev/ttyACM0
@@ -54,19 +54,19 @@ cu -l /dev/ttyACM0
 Exiting is done by typing `~.`**Make sure to exit Cu when you're done.**
 
 ## Troubleshooting
-Only one person can be running screen or cu at the same time. If the screen gives the output ```[screen is terminating]``` 
-or cu gives the output  ```cu: /dev/ttyACM0: Line in use```
+Only one person can be running `screen` or `cu` at the same time. If the `screen` gives the output ```[screen is terminating]``` 
+or `cu` gives the output  ```cu: /dev/ttyACM0: Line in use```
 it's likely there's an unclosed terminal preventing you from accessing the serial output. 
-First, double check in Slack to make sure nobody is actively using screen or cu at the same time as you. If not, it's likely 
+First, double check in Slack to make sure nobody is actively using `screen` or `cu` at the same time as you. If not, it's likely 
 someone forgot to close their session. To check, run 
 ```
 ps -e | grep screen && ps -e | grep cu
 ```
-This will print output if anybody else is actively running a screen session. If someone's running a screen session, try typing
+This will print output if anybody else is actively running a `screen` session. If someone's running a `screen` session, try typing
 ```
 screen -r 
 ```
-This will reattach a deteached screen session, and should allow you to regain control. Otherwise, run 
+This will reattach a deteached `screen` session, and should allow you to regain control. Otherwise, run 
 ```
 pkill screen && pkill cu
 ```
@@ -76,7 +76,7 @@ These commands might require sudo permissions, so if you don't have administrato
 
 Mu is a GUI editor made specifically for working with CircuitPython. It's educational, so it has very few features of a standard IDE.  
 However, Mu makes it very easy to access the REPL and see the terminal output. This makes it very easy
-to work with CircuitPython boards locally, and eliminates the need to use screen or cu. You can find the Mu documentation
+to work with CircuitPython boards locally, and eliminates the need to use `screen` or `cu`. You can find the Mu documentation
 [here](https://codewith.mu)
 
 ## The Serial Console and the REPL
