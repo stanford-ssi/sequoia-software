@@ -8,18 +8,18 @@ Install the software and plug the SD card into your computer.
 Select the `Raspberry Pi OS (other)` and then `Raspberry Pi OS Lite` (without
 all the extra software)
 
-![Image select](../assets/rpi/image_select.png)
+![Image select](https://media.githubusercontent.com/media/stanford-ssi/sequoia-software/assets/rpi/image_select.png)
 
 Select the SD card in the Raspberry Pi Imager software, and then click `write`
 when you are ready!
 
-![Images](../assets/rpi/imager.png)
+![Images](https://media.githubusercontent.com/media/stanford-ssi/sequoia-software/assets/rpi/imager.png)
 
 Make a file on the SD card named `ssh` (with no extension). This will allow you
 to connect to your Raspberry Pi remotely once you have flashed the operating
 system.
 
-![Boot folder](../assets/rpi/boot_folder.png)
+![Boot folder](https://media.githubusercontent.com/media/stanford-ssi/sequoia-software/assets/rpi/boot_folder.png)
 
 This can be done (on a Mac) in a terminal like so:
 
