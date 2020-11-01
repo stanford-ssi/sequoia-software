@@ -33,6 +33,7 @@ def LightDebuggingRoutine():
         cubesat.RGB = (1, 0, 0)
         time.sleep(1)
         cubesat.RGB = (0, 0, 1)
+  
 
 if __name__ == "__main__":
     # Turn off light so grant can sleep
