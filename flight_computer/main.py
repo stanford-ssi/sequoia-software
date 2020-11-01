@@ -30,9 +30,9 @@ def debug_routine():
     while True:
         print("PyCubed Running")
         time.sleep(1)
-        cubesat.RGB(255, 0, 0)
+        cubesat.RGB(1, 0, 0)
         time.sleep(1)
-        cubesat.RGB(0, 0, 255)
+        cubesat.RGB(0, 0, 1)
 
 
 if __name__ == "__main__":
