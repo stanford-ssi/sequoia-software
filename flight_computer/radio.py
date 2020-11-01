@@ -15,7 +15,7 @@ def send_packet(packet, radio=cubesat.radio1):
 def receive_packet(radio=cubesat.radio1) -> Packet:
     """Receive a packet on the UHF radio"""
     raw_data = radio.receive()
-    if raw_data == None:
+    if raw_data is None:
         return None
     # Uncomment next line if you want an easy way to test
     # raw_data = struct.pack('<iiii', 12345, 2, 3, 4)
@@ -36,6 +36,6 @@ def setup_radio():
     # rfm9x.enable_crc = True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     packet = receive_packet()
     print(packet.data)
