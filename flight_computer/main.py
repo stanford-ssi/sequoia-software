@@ -26,17 +26,19 @@ def initialize_state_machine():
 
 
 # Test in case we want to see if PYCUBED is working
-def debug_routine():
+def light_debugging_routine():
     while True:
         print("PyCubed Running")
         time.sleep(1)
-        cubesat.RGB(1, 0, 0)
+        cubesat.RGB = (1, 0, 0)
         time.sleep(1)
-        cubesat.RGB(0, 0, 1)
+        cubesat.RGB = (0, 0, 1)
 
 
 if __name__ == "__main__":
-    state_machine = initialize_state_machine()
+    # Turn off light so grant can sleep
+    cubesat.RGB = (0, 0, 0)
+    machine = initialize_state_machine()
     while True:
-        state_machine.update()
+        machine.update()
         time.sleep(1)
