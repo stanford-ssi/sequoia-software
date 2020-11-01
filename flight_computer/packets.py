@@ -25,7 +25,7 @@ class Packet:
     @property
     def field_names(self):
         """Returns the names of every field serialized in this struct"""
-        return _names
+        return self._names
 
     @property
     def data(self) -> dict:
