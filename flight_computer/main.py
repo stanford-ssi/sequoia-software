@@ -2,7 +2,6 @@ from pycubed import cubesat
 from transitions import HighPowerTransition, LowPowerTransition
 from state_machine import StateMachine
 from states import IdleState, LowPowerState
-import radio
 import time
 
 MIN_VOLTAGE = 5

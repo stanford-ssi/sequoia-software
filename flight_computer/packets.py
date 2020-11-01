@@ -9,6 +9,8 @@ class Packet:
     serialized with the CircuitPython struct library.
     """
 
+    type_num = 0
+
     def __init__(self):
         """Initialize struct. Subclasses should set self._fmt and self._names, to define the
         struct's possible field values. See
@@ -18,9 +20,9 @@ class Packet:
         type number"""
         self._data = {}
         # Placeholder
-        self._fmt = '<'
+        self._fmt = "<"
         # Placeholder
-        self.type_num = 0
+        self._names = []
 
     @property
     def field_names(self):
@@ -61,21 +63,24 @@ class Packet:
 
 
 class GenericPacket(Packet):
+    type_num = 1
+
     def __init__(self):
         super().__init__()
         self._fmt = "<ii"
-        self._names = ['magic', 'type']
+        self._names = ["magic", "type"]
         self.type_num = 1
 
 
 class TelemetryPacket(Packet):
     """A Packet for sending telemetry data to earth"""
+
     type_num = 2
 
     def __init__(self):
         super().__init__()
         self._fmt = "<iiii"
-        self._names = ['magic', 'type', 'temp', 'power']
+        self._names = ["magic", "type", "temp", "power"]
 
 
 """Dict mapping type nums to the packet object"""
@@ -89,10 +94,10 @@ def get_packet_from_raw_data(raw_data: bytes) -> Packet:
     generic_packet.raw_data = raw_data[:8]
 
     # Check magic number to make sure it's not corrupted
-    if generic_packet.data['magic'] != 12345:
+    if generic_packet.data["magic"] != 12345:
         raise Exception("INVALID MAGIC NUM")
 
-    type_num = generic_packet.data['type']
+    type_num = generic_packet.data["type"]
     if type_num not in _packet_types:
         raise Exception("INVALID PACKET TYPE")
 
