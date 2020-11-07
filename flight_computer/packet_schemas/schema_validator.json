@@ -15,7 +15,7 @@
         },
         "type": {
           "type": "string",
-          "pattern": "^(padding|float|double|char|unsigned_char|short|unsigned_short|int|unsigned_int|long|unsigned_long|long_long|unsigned_long_long|string)"
+          "pattern": "^(padding|float|double|char|unsigned_char|short|unsigned_short|int|unsigned_int|long|unsigned_long|long_long|unsigned_long_long|string)$"
         },
         "count": {
           "type": "integer",
