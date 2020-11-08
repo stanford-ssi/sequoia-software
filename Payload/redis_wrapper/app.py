@@ -14,7 +14,8 @@ class App:
         self._startup: Callable = None
         self._intervals: List[Tuple[float, Callable]] = []
         self._storage: Dict[str, Any] = {}
-        self._redis_client: aioredis.Redis = None
+        self._redis_subscriber: aioredis.Redis = None
+        self._redis_publisher: aioredis.Redis = None
         self._logger: Logger = None
 
     def subscribe(self, channel: str, schema: Dict[str, Any]) -> Callable:
@@ -25,11 +26,11 @@ class App:
                         message = json.loads(message)
                         validate(instance=message, schema=schema)
                         tmp = self._storage.copy()
-                        return_channel, return_message = await fn(message, self._redis_client, tmp)
+                        return_channel, return_message = await fn(message, self._redis_publisher, tmp)
                         validate(instance=tmp, schema=self._storage_schema)
                         self._storage = tmp
                         if return_channel and return_message:
-                            self._redis_client.publish(return_channel, json.dumps(return_message))
+                            self._redis_publisher.publish(return_channel, json.dumps(return_message))
                     except Exception as e:
                         self._logger.error(f"Exception occured in callback {channel} of {self._name}: {e}")
             self._channels.append((channel, callback_wrapper))
@@ -41,11 +42,11 @@ class App:
         async def startup_wrapper():
             try:
                 tmp = self._storage.copy()
-                return_channel, return_message = await fn({}, self._redis_client, tmp)
+                return_channel, return_message = await fn({}, self._redis_publisher, tmp)
                 validate(instance=tmp, schema=self._storage_schema)
                 self._storage = tmp
                 if return_channel and return_message:
-                    self._redis_client.publish(return_channel, json.dumps(return_message))
+                    self._redis_publisher.publish(return_channel, json.dumps(return_message))
             except Exception as e:
                 self._logger.error(f"Exception occured in callback startup callback of {self._name}: {e}")
         self._startup = startup_wrapper
@@ -57,11 +58,11 @@ class App:
                 while True:
                     try:
                         tmp = self._storage.copy()
-                        return_channel, return_message = await fn({}, self._redis_client, tmp)
+                        return_channel, return_message = await fn({}, self._redis_publisher, tmp)
                         validate(instance=tmp, schema=self._storage_schema)
                         self._storage = tmp
                         if return_channel and return_message:
-                            self._redis_client.publish(return_channel, json.dumps(return_message))
+                            self._redis_publisher.publish(return_channel, json.dumps(return_message))
                         await asyncio.sleep(timeout)
                     except Exception as e:
                         self._logger.error(f"Exception occured in callback interval of {self._name}: {e}")
@@ -71,8 +72,8 @@ class App:
 
     async def _activate_subscriptions(self):
         for name, callback in self._channels:
-            channel = await self._redis_client.subscribe(name)
-            asyncio.get_running_loop().create_task(callback(channel))
+            channel = await self._redis_subscriber.subscribe(name)
+            asyncio.get_running_loop().create_task(callback(channel[0]))
 
     async def _activate_intervals(self):
         for interval, callback in  self._intervals:
@@ -82,8 +83,10 @@ class App:
         """Cleanup tasks tied to the service's shutdown."""
         print(f"Received exit signal {signal.name}...")
         print("Closing redis connections")
-        self._redis_client.close()
-        await self._redis_client.wait_closed()
+        self._redis_subscriber.close()
+        self._redis_publisher.close()
+        await self._redis_subscriber.wait_closed()
+        await self._redis_publisher.wait_closed()
         print("Nacking outstanding messages")
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
 
@@ -94,11 +97,10 @@ class App:
         print(f"Flushing metrics")
         loop.stop()
 
-    def run(self, storage: Dict[str, Any], storage_schema: Dict[str, Any], redis_host: str = "localhost", \
+    def run(self, storage: Dict[str, Any], redis_host: str = "localhost", \
             redis_port: str = "6379", redis_password: str = None, logger: Logger = None):
 
         self._storage = storage
-        self._storage_schema = storage_schema
 
         if logger is None:
             self._logger = Logger(self._name)
@@ -107,7 +109,8 @@ class App:
 
         async def _run():
             try:
-                self._redis_client = await aioredis.create_redis(f"redis://{redis_host}:{redis_port}", password=redis_password)
+                self._redis_subscriber = await aioredis.create_redis(f"redis://{redis_host}:{redis_port}", password=redis_password)
+                self._redis_publisher = await aioredis.create_redis(f"redis://{redis_host}:{redis_port}", password=redis_password)
             except Exception as e:
                 logger.error(f"Failed to initialize redis: {e}")
                 raise e
