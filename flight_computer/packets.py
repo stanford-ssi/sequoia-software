@@ -1,3 +1,4 @@
+import json
 import struct
 
 
@@ -9,7 +10,43 @@ class Packet:
     serialized with the CircuitPython struct library.
     """
 
+    # Default values to appease linter
+    _names = []
+    _fmt = "<"
     type_num = 0
+
+    type_name_to_fmt_str = {
+        "padding": "x",
+        "float": "f",
+        "double": "d",
+        "char": "b",
+        "unsigned_char": "B",
+        "short": "h",
+        "unsigned_short": "H",
+        "int": "i",
+        "unsigned_int": "I",
+        "long": "l",
+        "unsigned_long": "L",
+        "long_long": "q",
+        "unsigned_long_long": "Q",
+        "string": "s",
+    }
+
+    @staticmethod
+    def initialize_fmt_and_names(filename):
+        packet_str = open(filename).read()
+        packet_schema = json.loads(packet_str)
+        # Assumes packet schema has been validated
+        fmt = ">"  # Use little endian
+        names = []
+        for field in packet_schema:
+            print(field)
+            if field["type"] != "padding":
+                names.append(field["name"])
+            if "count" in field and field["count"] != 1:
+                fmt += str(field["count"])
+            fmt += Packet.type_name_to_fmt_str[field["type"]]
+        return fmt, names
 
     def __init__(self):
         """Initialize struct. Subclasses should set self._fmt and self._names, to define the
@@ -18,11 +55,7 @@ class Packet:
         https://circuitpython.readthedocs.io/en/5.3.x/shared-bindings/struct/__init__.html.
         The first two element of the fmt string should generally be the magic number and the packet
         type number"""
-        self._data = {}
-        # Placeholder
-        self._fmt = "<"
-        # Placeholder
-        self._names = []
+        self._data = None
 
     @property
     def field_names(self):
@@ -65,11 +98,10 @@ class Packet:
 class GenericPacket(Packet):
     type_num = 1
 
+    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/generic.json")
+
     def __init__(self):
         super().__init__()
-        self._fmt = "<ii"
-        self._names = ["magic", "type"]
-        self.type_num = 1
 
 
 class TelemetryPacket(Packet):
@@ -77,10 +109,10 @@ class TelemetryPacket(Packet):
 
     type_num = 2
 
+    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/telemetry.json")
+
     def __init__(self):
         super().__init__()
-        self._fmt = "<iiii"
-        self._names = ["magic", "type", "temp", "power"]
 
 
 """Dict mapping type nums to the packet object"""

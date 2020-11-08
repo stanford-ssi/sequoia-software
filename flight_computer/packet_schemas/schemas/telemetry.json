@@ -1,0 +1,23 @@
+[
+  {
+    "name": "magic",
+    "type": "int"
+  },
+  {
+    "name": "type",
+    "type": "int"
+  },
+  {
+    "name": "temp",
+    "type": "float"
+  },
+  {
+    "name": "power",
+    "type": "float"
+  },
+  {
+    "name": "str_test",
+    "type": "string",
+    "count": 100
+  }
+]
