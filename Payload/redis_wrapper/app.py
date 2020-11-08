@@ -111,7 +111,8 @@ class App:
             except Exception as e:
                 logger.error(f"Failed to initialize redis: {e}")
                 raise e
-            await self._startup()
+            if self._startup:
+                await self._startup()
             await self._activate_subscriptions()
             await self._activate_intervals()
 
