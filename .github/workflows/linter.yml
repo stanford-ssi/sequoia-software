@@ -50,5 +50,6 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_MARKDOWN: false
           FILTER_REGEX_EXCLUDE: flight_computer/lib/.*
+          VALIDATE_MARKDOWN: false
+          VALIDATE_PYTHON_ISORT: false

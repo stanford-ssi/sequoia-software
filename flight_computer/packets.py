@@ -1,5 +1,5 @@
-import struct
 import json
+import struct
 
 
 # Represents one set of data to be sent or received
