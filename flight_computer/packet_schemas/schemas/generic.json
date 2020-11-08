@@ -1,0 +1,10 @@
+[
+  {
+    "name": "magic",
+    "type": "int"
+  },
+  {
+    "name": "type",
+    "type": "int"
+  }
+]

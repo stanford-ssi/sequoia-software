@@ -1,64 +1,41 @@
-# Some miscallenous radio functions
+# Some miscellaneous radio functions
 # Docs: https://circuitpython.readthedocs.io/projects/rfm9x/en/latest/
 
 # Written by Langston Nashold
-import uart
 
-import board
-import time
-import digitalio
-import struct
 from pycubed import cubesat
+from packets import Packet, get_packet_from_raw_data
 
-def sendTelemetryData(radio = cubesat.radio1):
-    fmt = "<iff"
-    # little endian standard size
-    # see https://docs.python.org/3/library/struct.html
-    packet = struct.pack(fmt, 5, cubesat.temperature_cpu, cubesat.current_draw)
+
+def send_packet(packet, radio=cubesat.radio1):
+    """Send a packet on the UHF radio"""
     radio.send(packet)
-    #print("Radio1 Sent: " + str(packet))
-    #print("Unpacked: " + str(struct.unpack(fmt, packet)))
-def sendString(s, radio = cubesat.radio1):
-    fmt = "100s"
-    packet = struct.pack(fmt, s)
-    radio.send(packet)
-    print("Radio1 Sent: " + str(packet))
 
-def receiveCommand(radio = cubesat.radio1):
-    fmt = "<ii100s"
 
-    data = radio.receive()
-    print("Received (raw)" + str(data))
-    if data != None:
-        unpacked = struct.unpack(fmt, data)
-        if (unpacked[0] != 613789):
-            print("ERROR: Magic num doesn't match")
-        handleCommand(unpacked[1], unpacked[2])
+def receive_packet(radio=cubesat.radio1) -> Packet:
+    """Receive a packet on the UHF radio"""
+    raw_data = radio.receive()
+    if raw_data is None:
+        return None
+    # Uncomment next line if you want an easy way to test
+    # raw_data = struct.pack('<iiii', 12345, 2, 3, 4)
+    return get_packet_from_raw_data(raw_data)
 
-def handleCommand(commandNum, data):
-    if commandNum == 32:
-        print("Send image command received")
-        s = data.decode('utf-8').rstrip('\x00')
-        result = uart.takeImage()
-        sendString(result)
 
-def setupRadio():
+def setup_radio():
     rfm9x = cubesat.radio1
     # Update settings to improve "effective range"
     # Change number of hertz you're modulating between
-    #rfm9x.signal_bandwidth = 62500
+    # rfm9x.signal_bandwidth = 62500
     # This changes FEC. Between 5-8. Higher number is more tolerant.
-    #rfm9x.coding_rate = 8
+    rfm9x.coding_rate = 8
     # Higher value allows distinguishes signal from noise
     # From 6 - 12
-    #rfm9x.spreading_factor = 8
-    # Enables cyclic redudancy check, checking for errors
-    #rfm9x.enable_crc = True
+    # rfm9x.spreading_factor = 8
+    # Enables cyclic redundancy check, checking for errors
+    # rfm9x.enable_crc = True
 
-if cubesat.hardware['Radio1']:
-    while True:
-        setupRadio()
-        sendTelemetryData()
-        receiveCommand()
-        time.sleep(0.1)
-    # Send something
+
+if __name__ == "__main__":
+    packet = receive_packet()
+    print(packet.data)

@@ -3,8 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# IDE files
+.idea/
+
 # C extensions
 *.so
+
+# Editor Files
+.idea/
 
 # Distribution / packaging
 .Python
@@ -14,7 +20,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
