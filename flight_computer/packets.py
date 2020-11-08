@@ -10,7 +10,11 @@ class Packet:
     serialized with the CircuitPython struct library.
     """
 
+    # Default values to appease linter
+    _names = []
+    _fmt = "<"
     type_num = 0
+
     type_name_to_fmt_str = {
         "padding": "x",
         "float": "f",
