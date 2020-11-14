@@ -8,16 +8,48 @@
     "type": "int"
   },
   {
-    "name": "temp",
-    "type": "float"
-  },
-  {
-    "name": "power",
-    "type": "float"
-  },
-  {
     "name": "str_test",
     "type": "string",
     "count": 100
+  },
+  {
+    "name": "attitude",
+    "type": "float",
+    "size": 4
+  },
+  {
+    "name": "angular_rates",
+    "type": "float",
+    "size": 3
+  },
+  {
+    "name": "battery_voltage",
+    "type": "float"
+  },
+  {
+    "name": "temperature",
+    "type": "float"
+  },
+  {
+    "name": "reset_count",
+    "type": "int"
+  },
+  {
+    "name": "antennas_deployed",
+    "type": "bool",
+    "size": 2
+  },
+  {
+    "name": "solar_panels_deployed",
+    "type": "bool",
+    "size": 2
+  },
+  {
+    "name": "reboot_code",
+    "type": "bool"
+  },
+  {
+    "name": "last_uplink_success",
+    "type": "bool"
   }
 ]
