@@ -46,7 +46,7 @@ class Packet:
             if "count" in field and field["count"] != 1:
                 fmt += str(field["count"])
             fmt += Packet.type_name_to_fmt_str[field["type"]]
-        return fmt, names
+        return names, fmt
 
     def __init__(self):
         """Initialize struct. Subclasses should set self._fmt and self._names, to define the
@@ -98,7 +98,7 @@ class Packet:
 class GenericPacket(Packet):
     type_num = 1
 
-    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/generic.json")
+    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/schemas/generic.json")
 
     def __init__(self):
         super().__init__()
@@ -109,7 +109,7 @@ class TelemetryPacket(Packet):
 
     type_num = 2
 
-    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/telemetry.json")
+    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/schemas/telemetry.json")
 
     def __init__(self):
         super().__init__()
@@ -137,3 +137,19 @@ def get_packet_from_raw_data(raw_data: bytes) -> Packet:
     packet = type()
     packet.raw_data = raw_data
     return packet
+
+
+def test_instantiate():
+    sample_data = {
+        "magic": 123,
+        "type": 2,
+        "str_test": bytes("hello world", "ascii")
+    }
+    sample_packet = TelemetryPacket()
+    sample_packet.data = sample_data
+    print(sample_packet.data.values())
+
+    sample_packet.print_raw_data()
+
+
+test_instantiate()

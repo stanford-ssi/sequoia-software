@@ -13,9 +13,9 @@
     "count": 100
   },
   {
-    "name": "attitude",
-    "type": "float",
-    "size": 4
+  "name": "attitude",
+  "type": "float",
+  "size": 4
   },
   {
     "name": "angular_rates",
