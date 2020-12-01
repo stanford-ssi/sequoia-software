@@ -21,56 +21,62 @@ REGISTER_SIZE = 2
 
 
 class Opt3001:
-    """A sun sensor!"""
+    """TODO: A better class description"""
 
 
 
 
     def __init__(self, i2c, address=DEVICE_DEFAULT_I2C_ADDR):
+        # TODO: A better method description
+        # Initialize i2c device from i2c passed in
         self.i2c = i2c_device.I2CDevice(i2c, address)
+        # Initialize a fixed buffer to read and write from
         self.buf = bytearray(3)
         # DEVICE ID SHOULD BE 0x3001
-        if (
-            self.read_value(DEVICE_ID) != 0x3001
-            or self.read_value(MANUFACTURER_ID) != 0x5449
-        ):
-            raise Exception(
-                "ERROR: Could not read correct device ID from bus provided!"
-            )
+        # Manufacturer ID should be 0x5449
 
-        # Start comparison
+        # Check device id (should be 0x3001)
+        self.read_value(DEVICE_ID)
+        if self.buf != bytes([0x30, 0x01]):
+            raise Exception("ERROR: Could not read correct device ID from bus provided!")
+
+        # TODO: Check manufacturer ID. Should be 0x5449
+
+        self.configure()
 
     # Configure sun sensor on startup
     def configure(self):
-        # Automatically choose lux range of device (bits 15 - 12)
-        self.write_value(CONFIGURATION, 0x1100, 12, 3)
-        # 100ms or 800ms conversion time
-        self.write_value(CONFIGURATION, 0x1, 11)
-        # Continously be doing conversions (i.e. start the thing)
-        self.write_value(CONFIGURATION, 0x2, 9, 2)
+        # TODO: These should be the correct values for the configuration we want
+        # We probably want automatic range setting
+        # and continuous conversions.
+        self.buf[1] = 0x00
+        self.buf[2] = 0x00
+        self.write_value(CONFIGURATION)
 
+        # TODO: Wait for conversion ready flag to be set
+
+    # Writes value into self.buf[1:2]
     def read_value(self, register):
-        # With statement automatically locks and unlocks
-        # I2C device
         with self.i2c as i2c:
             self.buf[0] = register
-            i2c.write_then_readinto(self.buf)
+            i2c.write_then_readinto(self.buf, in_end = 1, out_start = 1)
         return self.buf[0]
-        # with self.i2c_device as i2c:
-        #     i2c.writeto(b"0x00")
-        #     i2c.readfrom_into(self.buf)
-        # return self.buf[0]
 
-    def write_value(self, register, value):
+    # Assumes Value is stored in the last two bytes of self.buf
+    def write_value(self, register):
         with self.i2c as i2c:
             self.buf[0] = register
-            self.buf[1:2] = value
-            i2c.write(self.buf[1:2])
+            # Not sure this is the right, we might need to send a stop bit
+            # call i2c.write twice
+            i2c.write(self.buf)
 
     @property
     def lux(self):
-        exponent = self.read_value(self, RESULT, 12, 3)
-        fractional_result = self.read_value(self, RESULT, 0, 11)
+        # TODO: Wait for conversion ready bit?
+        self.read_value(self, RESULT)
+        # TODO: extract exponent and fractional result from self.buf
+        exponent = 0
+        fractional_result = 0
         lsb_size = 0.01 * 2**exponent
         lux = lsb_size * fractional_result
         return lux
