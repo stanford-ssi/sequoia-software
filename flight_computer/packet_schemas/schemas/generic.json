@@ -1,10 +1,10 @@
 [
   {
     "name": "magic",
-    "type": "int"
+    "type": "int_8"
   },
   {
     "name": "type",
-    "type": "int"
+    "type": "int_8"
   }
 ]
