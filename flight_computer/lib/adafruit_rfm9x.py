@@ -33,13 +33,10 @@ import time
 import random
 from micropython import const
 
-
 import adafruit_bus_device.spi_device as spidev
-
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RFM9x.git"
-
 
 # Internal constants:
 # Register names (FSK Mode even though we use LoRa instead, from table 85)
@@ -93,7 +90,6 @@ _RH_RF95_REG_40_DIO_MAPPING1 = const(0x40)
 _RH_RF95_REG_41_DIO_MAPPING2 = const(0x41)
 _RH_RF95_REG_42_VERSION = const(0x42)
 
-
 # OOK Registers
 _RH_OOK_REG_11_RSSI_VALUE = const(0x11)
 _RH_OOK_REG_30_PACKET_CONFIG1 = const(0x30)
@@ -114,7 +110,6 @@ _RH_RF95_REG_64_AGC_THRESH3 = const(0x64)
 
 _RH_RF95_DETECTION_OPTIMIZE = const(0x31)
 _RH_RF95_DETECTION_THRESHOLD = const(0x37)
-
 
 # CONSTANTS
 _RH_RF95_PA_DAC_DISABLE = const(0x04)
@@ -145,6 +140,7 @@ RX_MODE = 0b101
 
 _FSK_MODULATION = const(0x0)
 _OOK_MODULATION = const(0x1)
+
 
 # Disable the too many instance members warning.  Pylint has no knowledge
 # of the context and is merely guessing at the proper amount of members.  This
@@ -253,23 +249,23 @@ class RFM9x:
     bw_bins = (7800, 10400, 15600, 20800, 31250, 41700, 62500, 125000, 250000)
 
     # FSK / OOK Specific
-    packet_format = _RegisterBits(_RH_OOK_REG_30_PACKET_CONFIG1, offset=7, bits = 1)
-    crc_enabled = _RegisterBits(_RH_OOK_REG_30_PACKET_CONFIG1, offset = 4, bits = 1)
+    packet_format = _RegisterBits(_RH_OOK_REG_30_PACKET_CONFIG1, offset=7, bits=1)
+    crc_enabled = _RegisterBits(_RH_OOK_REG_30_PACKET_CONFIG1, offset=4, bits=1)
 
-    data_mode = _RegisterBits(_RH_OOK_REG_31_PACKET_CONFIG2, offset = 6, bits = 1)
-    payload_length_msb = _RegisterBits(_RH_OOK_REG_31_PACKET_CONFIG2, bits = 2)
+    data_mode = _RegisterBits(_RH_OOK_REG_31_PACKET_CONFIG2, offset=6, bits=1)
+    payload_length_msb = _RegisterBits(_RH_OOK_REG_31_PACKET_CONFIG2, bits=2)
 
     def __init__(
-        self,
-        spi,
-        cs,
-        reset,
-        frequency,
-        *,
-        lora_mode=True,
-        preamble_length=8,
-        high_power=True,
-        baudrate=5000000
+            self,
+            spi,
+            cs,
+            reset,
+            frequency,
+            *,
+            lora_mode=True,
+            preamble_length=8,
+            high_power=True,
+            baudrate=5000000
     ):
         self.lora_mode = lora_mode
         self.high_power = high_power
@@ -313,7 +309,7 @@ class RFM9x:
             # Setup entire 256 byte FIFO
             self._write_u8(_RH_RF95_REG_0E_FIFO_TX_BASE_ADDR, 0x00)
             self._write_u8(_RH_RF95_REG_0F_FIFO_RX_BASE_ADDR, 0x00)
-        # TODO: Set up FIFO in OOK mode
+        # We can't configure base addr's in FSK / OOK mode
 
         # Set mode idle
         self.idle()
@@ -328,7 +324,9 @@ class RFM9x:
         # Default to disable CRC checking on incoming packets.
         self.enable_crc = False
         # Note no sync word is set for LoRa mode either!
-        self._write_u8(_RH_RF95_REG_26_MODEM_CONFIG3, 0x00)  # Preamble lsb?
+
+        # This is the default value?
+        # self._write_u8(_RH_RF95_REG_26_MODEM_CONFIG3, 0x00)  # Preamble lsb?
         # Set transmit power to 13 dBm, a safe value any module supports.
         self.tx_power = 13
         # initialize last RSSI reading
@@ -383,13 +381,6 @@ class RFM9x:
            Fourth byte of the RadioHead header.
         """
         self.crc_error_count = 0
-
-
-
-
-
-
-
 
     # pylint: disable=no-member
     # Reconsider pylint: disable when this can be tested
@@ -631,8 +622,8 @@ class RFM9x:
         self._write_u8(
             _RH_RF95_REG_1E_MODEM_CONFIG2,
             (
-                (self._read_u8(_RH_RF95_REG_1E_MODEM_CONFIG2) & 0x0F)
-                | ((val << 4) & 0xF0)
+                    (self._read_u8(_RH_RF95_REG_1E_MODEM_CONFIG2) & 0x0F)
+                    | ((val << 4) & 0xF0)
             ),
         )
 
@@ -662,25 +653,35 @@ class RFM9x:
         if self.lora_mode:
             return (self._read_u8(_RH_RF95_REG_12_IRQ_FLAGS) & 0x8) >> 3
         else:
-            return (self._read_u8(_RH_OOK_REG_3E_IRQ_FLAGS1) & 0x32) >> 5
+            return (self._read_u8(_RH_OOK_REG_3E_IRQ_FLAGS1) & 0x20) >> 5
 
     def rx_done(self):
         """Receive status"""
-        return (self._read_u8(_RH_RF95_REG_12_IRQ_FLAGS) & 0x40) >> 6
+        if self.lora_mode:
+            return (self._read_u8(_RH_RF95_REG_12_IRQ_FLAGS) & 0x40) >> 6
+        else:
+            return (self._read_u8(_RH_OOK_REG_3E_IRQ_FLAGS1) & 0x40) >> 6
+
+    def _clear_interrupt_flags(self):
+        if self.lora_mode:
+            self._write_u8(_RH_RF95_REG_12_IRQ_FLAGS, 0xFF)
+        else:
+            self._write_u8(_RH_OOK_REG_3E_IRQ_FLAGS1, 0xFF)
 
     def crc_error(self):
         """crc status"""
+        # TODO: Implement for FSK / OOK
         return (self._read_u8(_RH_RF95_REG_12_IRQ_FLAGS) & 0x20) >> 5
 
     def send(
-        self,
-        data,
-        *,
-        keep_listening=False,
-        destination=None,
-        node=None,
-        identifier=None,
-        flags=None
+            self,
+            data,
+            *,
+            keep_listening=False,
+            destination=None,
+            node=None,
+            identifier=None,
+            flags=None
     ):
         """Send a string of data using the transmitter.
            You can only send 252 bytes at a time
@@ -724,6 +725,7 @@ class RFM9x:
         else:  # use kwarg
             payload[3] = flags
         payload = payload + data
+
         # Write payload.
         self._write_from(_RH_RF95_REG_00_FIFO, payload)
 
@@ -749,13 +751,8 @@ class RFM9x:
             # Enter idle mode to stop receiving other packets.
             self.idle()
 
-        # Clear interrupt.
-        if self.lora_mode:
-            self._write_u8(_RH_RF95_REG_12_IRQ_FLAGS, 0xFF)
-        else:
-            self._write_u8(_RH_OOK_REG_3E_IRQ_FLAGS1, 0xFF)
+        self._clear_interrupt_flags()
         return not timed_out
-
 
     def send_with_ack(self, data):
         """Reliable Datagram mode:
@@ -796,7 +793,7 @@ class RFM9x:
 
     # pylint: disable=too-many-branches
     def receive(
-        self, *, keep_listening=True, with_header=False, with_ack=False, timeout=None
+            self, *, keep_listening=True, with_header=False, with_ack=False, timeout=None
     ):
         """Wait to receive a packet from the receiver. If a packet is found the payload bytes
            are returned, otherwise None is returned (which indicates the timeout elapsed with no
@@ -854,16 +851,16 @@ class RFM9x:
                     packet = None
                 else:
                     if (
-                        self.node != _RH_BROADCAST_ADDRESS
-                        and packet[0] != _RH_BROADCAST_ADDRESS
-                        and packet[0] != self.node
+                            self.node != _RH_BROADCAST_ADDRESS
+                            and packet[0] != _RH_BROADCAST_ADDRESS
+                            and packet[0] != self.node
                     ):
                         packet = None
                     # send ACK unless this was an ACK or a broadcast
                     elif (
-                        with_ack
-                        and ((packet[3] & _RH_FLAGS_ACK) == 0)
-                        and (packet[0] != _RH_BROADCAST_ADDRESS)
+                            with_ack
+                            and ((packet[3] & _RH_FLAGS_ACK) == 0)
+                            and (packet[0] != _RH_BROADCAST_ADDRESS)
                     ):
                         # delay before sending Ack to give receiver a chance to get ready
                         if self.ack_delay is not None:
@@ -878,13 +875,13 @@ class RFM9x:
                         )
                         # reject Retries if we have seen this idetifier from this source before
                         if (self.seen_ids[packet[1]] == packet[2]) and (
-                            packet[3] & _RH_FLAGS_RETRY
+                                packet[3] & _RH_FLAGS_RETRY
                         ):
                             packet = None
                         else:  # save the packet identifier for this source
                             self.seen_ids[packet[1]] = packet[2]
                     if (
-                        not with_header and packet is not None
+                            not with_header and packet is not None
                     ):  # skip the header if not wanted
                         packet = packet[4:]
         # Listen again if necessary and return the result packet.
@@ -893,6 +890,6 @@ class RFM9x:
         else:
             # Enter idle mode to stop receiving other packets.
             self.idle()
-        # Clear interrupt.
-        self._write_u8(_RH_RF95_REG_12_IRQ_FLAGS, 0xFF)
+
+        self._clear_interrupt_flags()
         return packet
