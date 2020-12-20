@@ -2,6 +2,8 @@
 from opt3001 import Opt3001
 import busio
 import board
+from microcontroller import Pin
+import time
 # from transitions import HighPowerTransition, LowPowerTransition
 # from state_machine import StateMachine
 # from states import IdleState, LowPowerState
@@ -37,9 +39,40 @@ def light_debugging_routine():
         time.sleep(1)
         cubesat.RGB = (0, 0, 1)
 
+def is_hardware_I2C(scl, sda):
+    try:
+        p = busio.I2C(scl, sda)
+        p.deinit()
+        return True
+    except ValueError:
+        return False
+    except RuntimeError:
+        return True
+
+
+def get_unique_pins():
+    exclude = []
+    pins = [pin for pin in [
+        getattr(board, p) for p in dir(board) if p not in exclude]
+            if isinstance(pin, Pin)]
+    unique = []
+    for p in pins:
+        if p not in unique:
+            unique.append(p)
+    return unique
+
+def scan_for_i2c_pins():
+    for scl_pin in get_unique_pins():
+        for sda_pin in get_unique_pins():
+            if scl_pin is sda_pin:
+                continue
+            if is_hardware_I2C(scl_pin, sda_pin):
+                print("SCL pin:", scl_pin, "\t SDA pin:", sda_pin)
 
 def test_light_sensor():
     print("---Testing Light Sensor Driver---")
+    print("Scanning for I2C pins")
+    scan_for_i2c_pins()
     print("Initializing I2C Bus")
     i2c = busio.I2C(board.PB17, board.PB16)
     print("Initializing Driver")
