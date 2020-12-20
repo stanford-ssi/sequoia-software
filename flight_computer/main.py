@@ -1,5 +1,7 @@
 #from pycubed import cubesat
 from opt3001 import Opt3001
+import busio
+import board
 # from transitions import HighPowerTransition, LowPowerTransition
 # from state_machine import StateMachine
 # from states import IdleState, LowPowerState
@@ -37,18 +39,14 @@ def light_debugging_routine():
 
 
 def test_light_sensor():
-    try:
-        print("---Testing Light Sensor Driver---")
-        print("Initializing I2C Bus")
-        i2c = busio.I2C(board.PB17, board.PB16)
-        print("Initializing Driver")
-        sun_sensor = Opt3001(i2c)
-        print("Driver Initialized")
-        print("Reading driver values")
-        print("Received value of " + str(sun_sensor.lux))
-    except Exception as e:
-        print("Received Exception:")
-        print(e)
+    print("---Testing Light Sensor Driver---")
+    print("Initializing I2C Bus")
+    i2c = busio.I2C(board.PB17, board.PB16)
+    print("Initializing Driver")
+    sun_sensor = Opt3001(i2c)
+    print("Driver Initialized")
+    print("Reading driver values")
+    print("Received value of " + str(sun_sensor.lux))
 
 
 
