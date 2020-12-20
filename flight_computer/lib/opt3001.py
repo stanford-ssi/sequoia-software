@@ -57,15 +57,16 @@ class Opt3001:
 
         # DEVICE ID SHOULD BE 0x3001
         self.read_value(DEVICE_ID)
+        print(self.buf)
         if self.buf[1:2] != bytes([0x30, 0x01]):
             raise Exception("ERROR: Could not read correct device ID from bus provided")
 
         # MANUFACTURER ID Should be 0x5449
-        self.read_value(MANUFACTURER_ID)
-        if self.buf[1:2] != bytes([0x54, 0x49]):
-            raise Exception("ERROR: Could not read correct manufacturer ID from bus provided")
+        # self.read_value(MANUFACTURER_ID)
+        # if self.buf[1:2] != bytes([0x54, 0x49]):
+        #     raise Exception("ERROR: Could not read correct manufacturer ID from bus provided")
 
-        self.configure(conversion_time)
+        # self.configure(conversion_time)
 
     def __del__(self):
         """DeInitialize the sun sensor: set to low power mode"""

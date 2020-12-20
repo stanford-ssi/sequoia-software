@@ -1,28 +1,29 @@
-from pycubed import cubesat
-from transitions import HighPowerTransition, LowPowerTransition
-from state_machine import StateMachine
-from states import IdleState, LowPowerState
-import time
-
-MIN_VOLTAGE = 5
-
-
-def initialize_state_machine():
-    # create machine object of class StateMachine and add states
-    machine = StateMachine(cubesat)
-    machine.cubesat = cubesat
-
-    # Initialize Transitions
-    low_power_transition = LowPowerTransition("lowpower", MIN_VOLTAGE)
-    high_power_transition = HighPowerTransition("idle", MIN_VOLTAGE)
-
-    # Add States
-    machine.add_state(IdleState([low_power_transition]))
-    machine.add_state(LowPowerState([high_power_transition]))
-
-    # start off the StateMachine object in idle
-    machine.go_to_state("idle")
-    return machine
+#from pycubed import cubesat
+from opt3001 import Opt3001
+# from transitions import HighPowerTransition, LowPowerTransition
+# from state_machine import StateMachine
+# from states import IdleState, LowPowerState
+# import time
+#
+# MIN_VOLTAGE = 5
+#
+#
+# def initialize_state_machine():
+#     # create machine object of class StateMachine and add states
+#     machine = StateMachine(cubesat)
+#     machine.cubesat = cubesat
+#
+#     # Initialize Transitions
+#     low_power_transition = LowPowerTransition("lowpower", MIN_VOLTAGE)
+#     high_power_transition = HighPowerTransition("idle", MIN_VOLTAGE)
+#
+#     # Add States
+#     machine.add_state(IdleState([low_power_transition]))
+#     machine.add_state(LowPowerState([high_power_transition]))
+#
+#     # start off the StateMachine object in idle
+#     machine.go_to_state("idle")
+#     return machine
 
 
 # Test in case we want to see if PYCUBED is working
@@ -35,10 +36,22 @@ def light_debugging_routine():
         cubesat.RGB = (0, 0, 1)
 
 
+def test_light_sensor():
+    try:
+        print("---Testing Light Sensor Driver---")
+        print("Initializing I2C Bus")
+        i2c = busio.I2C(board.PB17, board.PB16)
+        print("Initializing Driver")
+        sun_sensor = Opt3001(i2c)
+        print("Driver Initialized")
+        print("Reading driver values")
+        print("Received value of " + str(sun_sensor.lux))
+    except Exception as e:
+        print("Received Exception:")
+        print(e)
+
+
+
 if __name__ == "__main__":
     # Turn off light so grant can sleep
-    cubesat.RGB = (0, 0, 0)
-    machine = initialize_state_machine()
-    while True:
-        machine.update()
-        time.sleep(1)
+    test_light_sensor()
