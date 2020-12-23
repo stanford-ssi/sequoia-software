@@ -32,7 +32,7 @@ class Packet:
     }
 
     @staticmethod
-    def initialize_fmt_and_names(filename):
+    def initialize_fmt_and_fields(filename):
         packet_str = open(filename).read()
         packet_schema = json.loads(packet_str)
         # Assumes packet schema has been validated
@@ -82,7 +82,7 @@ class Packet:
         self._data = data
 
     @property
-    def raw_data(self):
+    def raw_data(self) -> BitArray:
         """Get raw values as a bitarray"""
         data_list = []
         for field, vals in self.data.items():
@@ -92,7 +92,7 @@ class Packet:
         return arr
 
     @raw_data.setter
-    def raw_data(self, arr: BitArray):
+    def raw_data(self, arr: BitArray) -> None:
         """Set raw data from bitarray"""
         data = {}
         data_list = arr.unpack(self._fmt)
@@ -103,6 +103,10 @@ class Packet:
             data_iterator += count
         self._data = data
 
+    @property
+    def get_bytes(self):
+        
+
     def print_raw_data(self):
         """Helper function for pretty-printing raw data"""
         print(self.raw_data.bin)
@@ -111,7 +115,7 @@ class Packet:
 class GenericPacket(Packet):
     type_num = GENERIC_PACKET_TYPE_NUM
 
-    (_fmt, _fields) = Packet.initialize_fmt_and_names(SCHEMAS_PATH + "/generic.json")
+    (_fmt, _fields) = Packet.initialize_fmt_and_fields(SCHEMAS_PATH + "/generic.json")
 
     def __init__(self):
         super().__init__()
@@ -122,7 +126,7 @@ class TelemetryPacket(Packet):
 
     type_num = TELEMETRY_PACKET_TYPE_NUM
 
-    (_fmt, _fields) = Packet.initialize_fmt_and_names(SCHEMAS_PATH + "/telemetry.json")
+    (_fmt, _fields) = Packet.initialize_fmt_and_fields(SCHEMAS_PATH + "/telemetry.json")
 
     def __init__(self):
         super().__init__()
@@ -132,8 +136,10 @@ class TelemetryPacket(Packet):
 _packet_types = [TelemetryPacket]
 _packet_types = {packet_type.type_num: packet_type for packet_type in _packet_types}
 
-# TODO: FINISH GET PACKET FROM RAW DATA
+
+
 # def get_packet_from_raw_data(raw_data: bytes) -> Packet:
+#     """TODO: FINISH GET PACKET FROM RAW DATA"""
 #     # Construct a generic packet to check command number
 #     generic_packet = GenericPacket()
 #     generic_packet.raw_data = raw_data[:16]
@@ -151,7 +157,7 @@ _packet_types = {packet_type.type_num: packet_type for packet_type in _packet_ty
 #     type = _packet_types[type_num]
 #     packet = type()
 #     packet.raw_data = raw_data
-#     return packet
+#     return packet_type
 
 
 def test_bit_array():
@@ -206,4 +212,3 @@ def test_instantiate_telemetry():
 
 
 test_instantiate_telemetry()
-
