@@ -44,8 +44,8 @@ jobs:
       ################################
       # Run Linter against code base #
       ################################
-      - name: Lint Code Base
-        uses: github/super-linter@v3
+      - name: GitHub Action for pylint
+        uses: cclauss/GitHub-Action-for-pylint@0.7.0
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: master
