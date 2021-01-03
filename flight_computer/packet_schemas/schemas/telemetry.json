@@ -1,23 +1,50 @@
 [
   {
     "name": "magic",
-    "type": "int"
+    "type": "int_8"
   },
   {
     "name": "type",
-    "type": "int"
+    "type": "int_8"
   },
   {
-    "name": "temp",
-    "type": "float"
+    "name": "attitude",
+    "type": "float_32",
+    "count": 4
   },
   {
-    "name": "power",
-    "type": "float"
+    "name": "angular_rates",
+    "type": "float_32",
+    "count": 3
   },
   {
-    "name": "str_test",
-    "type": "string",
-    "count": 100
+    "name": "battery_voltage",
+    "type": "float_32"
+  },
+  {
+    "name": "temperature",
+    "type": "float_32"
+  },
+  {
+    "name": "reset_count",
+    "type": "int_8"
+  },
+  {
+    "name": "antennas_deployed",
+    "type": "bool",
+    "count": 2
+  },
+  {
+    "name": "solar_panels_deployed",
+    "type": "bool",
+    "count": 2
+  },
+  {
+    "name": "reboot_code",
+    "type": "bool"
+  },
+  {
+    "name": "last_uplink_success",
+    "type": "bool"
   }
 ]

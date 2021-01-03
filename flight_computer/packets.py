@@ -1,66 +1,69 @@
 import json
 import struct
+import os
+
+MAGIC_NUMBER = 99  # must be between -128 to 127
+
+type_num_to_schema = {
+    1: "generic",
+    2: "telemetry"
+}
+schema_to_type_num = dict({reversed(item) for item in type_num_to_schema.items()})
+
+schemas_path = "./packet_schemas/schemas/"
+
+ENDIAN = ">"
+U_8 = "B"  # B is unsigned char in python struct
+
+type_name_to_fmt = {
+    "float_32": "f",
+    "int_8": "b",
+    "bool": "z"
+}
+
+fmt_to_byte_size = {
+    "f": 4,
+    "b": 1,
+}
 
 
-# Represents one set of data to be sent or received
 class Packet:
-    """
-    A class to represent data to be sent or received with the radio.
+    """A class to represent data to be sent or received with the radio.
     It maintains a dictionary mapping fields to values, which can be
-    serialized with the CircuitPython struct library.
-    """
+    serialized into a bytearray."""
 
-    # Default values to appease linter
-    _names = []
-    _fmt = "<"
-    type_num = 0
+    def __init__(self, packet_type):
+        """Initialize a Packet object that stores a mapping of fields to values, a format string to serialize its data,
+        a packet type number, and a mapping of how many values are mapped to each field"""
+        self._data = {}
+        self._field_to_count = {}
+        self._fmt = ""
+        self._type_num = packet_type if isinstance(packet_type, int) else schema_to_type_num[packet_type]
 
-    type_name_to_fmt_str = {
-        "padding": "x",
-        "float": "f",
-        "double": "d",
-        "char": "b",
-        "unsigned_char": "B",
-        "short": "h",
-        "unsigned_short": "H",
-        "int": "i",
-        "unsigned_int": "I",
-        "long": "l",
-        "unsigned_long": "L",
-        "long_long": "q",
-        "unsigned_long_long": "Q",
-        "string": "s",
-    }
+        def initialize_fmt_and_fields():
+            packet_path = os.path.join(
+                os.path.dirname(__file__), schemas_path + type_num_to_schema[self._type_num] + ".json"
+            )
 
-    @staticmethod
-    def initialize_fmt_and_names(filename):
-        packet_str = open(filename).read()
-        packet_schema = json.loads(packet_str)
-        # Assumes packet schema has been validated
-        fmt = ">"  # Use little endian
-        names = []
-        for field in packet_schema:
-            print(field)
-            if field["type"] != "padding":
-                names.append(field["name"])
-            if "count" in field and field["count"] != 1:
-                fmt += str(field["count"])
-            fmt += Packet.type_name_to_fmt_str[field["type"]]
-        return fmt, names
+            packet_str = open(packet_path).read()
+            packet_schema = json.loads(packet_str)
+            # Assumes packet schema has been validated
 
-    def __init__(self):
-        """Initialize struct. Subclasses should set self._fmt and self._names, to define the
-        struct's possible field values. See
-        https://docs.python.org/3/library/struct.html and
-        https://circuitpython.readthedocs.io/en/5.3.x/shared-bindings/struct/__init__.html.
-        The first two element of the fmt string should generally be the magic number and the packet
-        type number"""
-        self._data = None
+            for field in packet_schema:
+                # count = 1
+                # if "count" in field:
+                count = field["count"] if "count" in field else 1
+
+                self._field_to_count[field["name"]] = count
+                for _ in range(count):
+                    self._fmt += type_name_to_fmt[field["type"]]
+
+        initialize_fmt_and_fields()
 
     @property
     def field_names(self):
-        """Returns the names of every field serialized in this struct"""
-        return self._names
+        """Returns the names of every field name serialized in this struct"""
+        return self._data.keys()
 
     @property
     def data(self) -> dict:
@@ -70,70 +73,106 @@ class Packet:
     @data.setter
     def data(self, data: dict) -> None:
         """Set data, validating it to make sure it specifies exactly the right fields"""
-        for key in data.keys():
-            if key not in self._names:
-                print("Invalid key in data: " + key)
-        for key in self._names:
-            if key not in data:
-                print("Missing key: " + key)
+        for field in data.keys():
+            if field not in self._field_to_count:
+                raise Exception("Invalid key in data: " + field)
+        for field in self._field_to_count:
+            if field not in data:
+                raise Exception("Missing key: " + field)
+
+        for field, val in data.items():
+            if type(val) is not list:
+                data[field] = [val]
         self._data = data
 
     @property
-    def raw_data(self) -> bytes:
-        """Return struct serialized as raw data, in bytes object"""
-        data_list = [self._data[key] for key in self._names]
-        return struct.pack(self._fmt, *data_list)
+    def raw_data(self) -> bytearray:
+        """Get raw values as a bitarray"""
+        val_list = []
+        for field, vals in self.data.items():
+            for val in vals:
+                val_list.append(val)
+
+        packed_data = bytearray()
+        bool_list = []
+        for fmt, val in zip(self._fmt, val_list):
+            if fmt is type_name_to_fmt["bool"]:
+                bool_list.append(val)
+            else:
+                packed_data += struct.pack(ENDIAN + fmt, val)
+
+        # compress all bools into a few bytes
+        packed_bools = bytearray()
+        j = 0
+        bool_byte = 0
+        for b in bool_list:
+            bool_byte |= (b << j)
+            j = (j + 1) % 8
+            if j is 0:
+                packed_bools += struct.pack(ENDIAN + U_8, bool_byte)  # unsigned char to represent 8 bits!
+                bool_byte = 0
+        if j is not 0 and len(bool_list) > 0:
+            packed_bools += struct.pack(ENDIAN + U_8, bool_byte)
+        packed_data += packed_bools
+
+        return packed_data
 
     @raw_data.setter
-    def raw_data(self, raw_data: bytes):
-        """Initialize internal data from a raw bytes object"""
-        data_list = struct.unpack(self._fmt, raw_data)
-        self._data = {key: val for key, val in zip(self._names, data_list)}
+    def raw_data(self, arr: bytearray) -> None:
+        """Set raw data from bytearray"""
+
+        """make a list of values parsed according to the packets fmt string"""
+        val_list = []
+        k_arr = 0
+        j_bit = 0
+        for fmt in self._fmt:
+            if fmt is not type_name_to_fmt["bool"]:
+                raw_bytes = arr[k_arr: k_arr + fmt_to_byte_size[fmt]]
+                val = struct.unpack(ENDIAN + fmt, raw_bytes)[0]
+                val_list.append(val)
+                k_arr += fmt_to_byte_size[fmt]
+            else:
+                # decompress bytes into bools
+                # get truth value at jth position at the kth byte in the byte array
+                bitmask = 1 << j_bit
+                raw_byte = arr[k_arr:k_arr + 1]
+                val = bitmask & struct.unpack(ENDIAN + U_8, raw_byte)[0]
+                val = bool(val)
+                val_list.append(val)
+                j_bit = (j_bit + 1) % 8
+                if j_bit is 0:
+                    k_arr += 1
+        data = {}
+        data_iterator = 0
+        for field, count in self._field_to_count.items():
+            vals = val_list[data_iterator: data_iterator + count]
+            data[field] = vals
+            data_iterator += count
+        self._data = data
 
     def print_raw_data(self):
         """Helper function for pretty-printing raw data"""
         print(self.raw_data.hex())
 
 
-class GenericPacket(Packet):
-    type_num = 1
-
-    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/generic.json")
-
-    def __init__(self):
-        super().__init__()
-
-
-class TelemetryPacket(Packet):
-    """A Packet for sending telemetry data to earth"""
-
-    type_num = 2
-
-    (_names, _fmt) = Packet.initialize_fmt_and_names("./packet_schemas/telemetry.json")
-
-    def __init__(self):
-        super().__init__()
-
-
-"""Dict mapping type nums to the packet object"""
-_packet_types = [TelemetryPacket]
-_packet_types = {packet_type.type_num: packet_type for packet_type in _packet_types}
-
-
-def get_packet_from_raw_data(raw_data: bytes) -> Packet:
+def get_packet_from_raw_data(raw_data: bytearray) -> Packet:
+    """Generate packet object from the given raw data as a bytearray object"""
     # Construct a generic packet to check command number
-    generic_packet = GenericPacket()
-    generic_packet.raw_data = raw_data[:8]
+    generic_packet = Packet("generic")
+    generic_packet.raw_data = raw_data[:2]
+    # first byte is magic number, second byte is packet type
 
     # Check magic number to make sure it's not corrupted
-    if generic_packet.data["magic"] != 12345:
+    if generic_packet.data["magic"] != [MAGIC_NUMBER]:
         raise Exception("INVALID MAGIC NUM")
 
-    type_num = generic_packet.data["type"]
-    if type_num not in _packet_types:
+    # Check packet type to make sure its not corrupted
+    type_num = generic_packet.data["type"][0]
+    if type_num not in type_num_to_schema:
         raise Exception("INVALID PACKET TYPE")
 
-    type = _packet_types[type_num]
-    packet = type()
+    packet = Packet(type_num)
     packet.raw_data = raw_data
     return packet
+
+
