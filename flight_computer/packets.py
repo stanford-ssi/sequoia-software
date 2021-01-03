@@ -93,59 +93,55 @@ class Packet:
             for val in vals:
                 val_list.append(val)
 
-        def pack() -> bytearray:
-            packed_data = bytearray()
-            bool_list = []
-            for fmt, val in zip(self._fmt, val_list):
-                if fmt is type_name_to_fmt["bool"]:
-                    bool_list.append(val)
-                else:
-                    packed_data += struct.pack(ENDIAN + fmt, val)
+        packed_data = bytearray()
+        bool_list = []
+        for fmt, val in zip(self._fmt, val_list):
+            if fmt is type_name_to_fmt["bool"]:
+                bool_list.append(val)
+            else:
+                packed_data += struct.pack(ENDIAN + fmt, val)
 
-            packed_bools = bytearray()
-            j = 0
-            bool_byte = 0
-            for b in bool_list:
-                bool_byte |= (b << j)
-                j = (j + 1) % 8
-                if j is 0:
-                    packed_bools += struct.pack(ENDIAN + U_8, bool_byte)  # unsigned char to represent 8 bits!
-                    bool_byte = 0
-            if j is not 0 and len(bool_list) > 0:
-                packed_bools += struct.pack(ENDIAN + U_8, bool_byte)
-            packed_data += packed_bools
-            return packed_data
+        # compress all bools into a few bytes
+        packed_bools = bytearray()
+        j = 0
+        bool_byte = 0
+        for b in bool_list:
+            bool_byte |= (b << j)
+            j = (j + 1) % 8
+            if j is 0:
+                packed_bools += struct.pack(ENDIAN + U_8, bool_byte)  # unsigned char to represent 8 bits!
+                bool_byte = 0
+        if j is not 0 and len(bool_list) > 0:
+            packed_bools += struct.pack(ENDIAN + U_8, bool_byte)
+        packed_data += packed_bools
 
-        return pack()
+        return packed_data
 
     @raw_data.setter
     def raw_data(self, arr: bytearray) -> None:
         """Set raw data from bytearray"""
+
+        """make a list of values parsed according to the packets fmt string"""
         val_list = []
-
-        def unpack():
-            """return a list of values parsed according to the packets fmt string"""
-            k_arr = 0
-            j_bit = 0
-            for fmt in self._fmt:
-                if fmt is not type_name_to_fmt["bool"]:
-                    raw_bytes = arr[k_arr: k_arr + fmt_to_byte_size[fmt]]
-                    val = struct.unpack(ENDIAN + fmt, raw_bytes)[0]
-                    val_list.append(val)
-                    k_arr += fmt_to_byte_size[fmt]
-                else:
-                    # get truth value at jth position at the kth byte in the byte array
-                    bitmask = 1 << j_bit
-                    raw_byte = arr[k_arr:k_arr + 1]
-                    val = bitmask & struct.unpack(ENDIAN + U_8, raw_byte)[0]
-                    val = bool(val)
-                    val_list.append(val)
-                    j_bit = (j_bit + 1) % 8
-                    if j_bit is 0:
-                        k_arr += 1
-            return val_list
-
-        unpack()
+        k_arr = 0
+        j_bit = 0
+        for fmt in self._fmt:
+            if fmt is not type_name_to_fmt["bool"]:
+                raw_bytes = arr[k_arr: k_arr + fmt_to_byte_size[fmt]]
+                val = struct.unpack(ENDIAN + fmt, raw_bytes)[0]
+                val_list.append(val)
+                k_arr += fmt_to_byte_size[fmt]
+            else:
+                # decompress bytes into bools
+                # get truth value at jth position at the kth byte in the byte array
+                bitmask = 1 << j_bit
+                raw_byte = arr[k_arr:k_arr + 1]
+                val = bitmask & struct.unpack(ENDIAN + U_8, raw_byte)[0]
+                val = bool(val)
+                val_list.append(val)
+                j_bit = (j_bit + 1) % 8
+                if j_bit is 0:
+                    k_arr += 1
         data = {}
         data_iterator = 0
         for field, count in self._field_to_count.items():
@@ -157,24 +153,6 @@ class Packet:
     def print_raw_data(self):
         """Helper function for pretty-printing raw data"""
         print(self.raw_data.hex())
-
-# we might not need these?
-# class GenericPacket(Packet):
-#     """A Packet for the most basic validation of magic number and type num"""
-#     def __init__(self):
-#         super().__init__(schema_to_type_num["generic"])
-#
-#
-# class TelemetryPacket(Packet):
-#     """A Packet for sending telemetry data to earth"""
-#     def __init__(self):
-#         super().__init__(schema_to_type_num["telemetry"])
-#
-#
-# """Dict mapping type nums to the packet object"""
-# _packet_types = [GenericPacket, TelemetryPacket]
-# _packet_types = {packet_type.type_num: packet_type for packet_type in _packet_types}
-#
 
 
 def get_packet_from_raw_data(raw_data: bytearray) -> Packet:
