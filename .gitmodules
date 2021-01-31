@@ -1,3 +1,6 @@
 [submodule "simulation"]
 	path = simulation
 	url = https://github.com/stanford-ssi/sequoia-simulation.git
+[submodule "flight_computer/firmware"]
+	path = flight_computer/firmware
+	url = https://github.com/stanford-ssi/pycubed-firmware.git
