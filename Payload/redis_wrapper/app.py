@@ -2,6 +2,7 @@ import json
 import signal
 import asyncio
 import aioredis
+import traceback
 from logging import Logger
 from jsonschema import validate
 from typing import Callable, List, Tuple, Any, Dict
@@ -23,16 +24,20 @@ class App:
             async def callback_wrapper(channel: aioredis.Channel):
                 async for message in channel.iter():
                     try:
-                        message = json.loads(message)
-                        validate(instance=message, schema=schema)
+                        self._logger.debug(f"Got {message} of type {type(message)} on {channel.name.decode()} at {self._name}")
+                        msg = json.loads(message)
+                        validate(instance=msg, schema=schema)
                         tmp = self._storage.copy()
-                        return_channel, return_message = await fn(message, self._redis_publisher, tmp)
+                        ret_val = await fn(msg, self._redis_publisher, tmp)
                         validate(instance=tmp, schema=self._storage_schema)
                         self._storage = tmp
-                        if return_channel and return_message:
-                            self._redis_publisher.publish(return_channel, json.dumps(return_message))
+                        if ret_val != None and not isinstance(ret_val, tuple) and len(ret_val) != 2 and not isinstance(ret_val[0], string) and not isinstance(ret_val[1], dict):
+                            raise ValueError("Callback needs to return either None our channel name <string>, message <dict> tuple")
+                        elif ret_val != None:
+                            self._logger.debug(f"Sending {json.dumps(ret_val[1])} of type {type(json.dumps(ret_val[1]))} on {channel.name.decode()} at {self._name}")
+                            self._redis_publisher.publish(ret_val[0], json.dumps(ret_val[1]))
                     except Exception as e:
-                        self._logger.error(f"Exception occured in callback {channel} of {self._name}: {e}")
+                        self._logger.error(f"Exception occured in callback {channel.name.decode()} of {self._name}: {traceback.format_exc()}")
             self._channels.append((channel, callback_wrapper))
             return fn
         return decorator
@@ -48,7 +53,7 @@ class App:
                 if return_channel and return_message:
                     self._redis_publisher.publish(return_channel, json.dumps(return_message))
             except Exception as e:
-                self._logger.error(f"Exception occured in callback startup callback of {self._name}: {e}")
+                self._logger.error(f"Exception occured in callback startup callback of {self._name}: {traceback.format_exc()}")
         self._startup = startup_wrapper
         return fn
 
@@ -65,7 +70,7 @@ class App:
                             self._redis_publisher.publish(return_channel, json.dumps(return_message))
                         await asyncio.sleep(timeout)
                     except Exception as e:
-                        self._logger.error(f"Exception occured in callback interval of {self._name}: {e}")
+                        self._logger.error(f"Exception occured in callback interval of {self._name}: {traceback.format_exc()}")
             self._intervals.append((timeout, callback_wrapper))
             return fn
         return decorator

@@ -4,28 +4,46 @@ import json
 import base64
 import numpy as np
 
+import json
+import asyncio
 
-async def main():
-    sub = await get_redis_client()
-    pub = await get_redis_client()
-    (pattern,) = await sub.subscribe(
-        config["CHANNELS"]["CAM-RES"]
-    )  # read all channels prefixed with `SOME_`
+from redis_wrapper.app import App
+from utils import validate_json, config, get_sequoia_logger
 
-    while await pattern.wait_message():
-        data = await pattern.get()
-        validate_json(json.loads(data))
-        message = json.loads(data.decode())
-        img = base64.b64decode(message["data"].encode())
-        img = np.frombuffer(img, dtype=np.float64)
+message_schema = {
+        "type": "object",
+        "properties": {
+            "data": {
+                "type": "string"
+            },
+            "time": {
+                "type": "string"
+            }, 
+            "origin": {
+                "type": "string"
+            }, 
+            "command": {
+                "type": "string"
+            }
+        },
+        "required": ["data", "time", "origin", "command"]
+    }
 
-        # run model inference here
-        print(img.tolist()[0:30])
+logger = get_sequoia_logger()
 
-        # change out message once inference is implemented
-        await pub.publish(config["CHANNELS"]["FC-OUT"], data)
-        await asyncio.sleep(1)
+app = App("imageProcessor", {})
+
+@app.subscribe(config["CHANNELS"]["CAM-RES"], message_schema)
+async def receive_message(msg, redis, cache):
+    img = base64.b64decode(msg["data"].encode())
+    img = np.frombuffer(img, dtype=np.float64)
+
+    # run model inference here
+    print(img.tolist()[0:30])
+
+    # change out message once inference is implemented
+    return config["CHANNELS"]["FC-OUT"], msg
 
 
 if __name__ == "__main__":
-    run(main)
+    app.run({})

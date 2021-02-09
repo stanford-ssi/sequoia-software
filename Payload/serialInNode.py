@@ -21,12 +21,11 @@ async def send_new_value(_, redis, cache):
     else:
         loop = asyncio.get_running_loop()
         data = await loop.run_in_executor(None, device.read_until)
-
+    print(f"Got data {data}")
     msg = json.loads(data)
     if validate_json(msg):
         print(f"Sending to channel {config['CHANNELS']['FC-IN']}: {json.dumps(data, indent=4)}")
-        return config["CHANNELS"]["FC-IN"], data
-    return None, None
+        return config["CHANNELS"]["FC-IN"], msg
 
 
 if __name__ == "__main__":
