@@ -1,11 +1,31 @@
-import asyncio
 import json
+import asyncio
 
-import utils
+from redis_wrapper.app import App
+from utils import validate_json, config, get_sequoia_logger
 
-logger = utils.get_sequoia_logger()
+message_schema = {
+        "type": "object",
+        "properties": {
+            "data": {
+                "type": "string"
+            },
+            "time": {
+                "type": "string"
+            }, 
+            "origin": {
+                "type": "string"
+            }, 
+            "command": {
+                "type": "string"
+            }
+        },
+        "required": ["data", "time", "origin", "command"]
+    }
 
-TEST = utils.config["TESTING"].getboolean("TEST")
+logger = get_sequoia_logger()
+
+TEST = config["TESTING"].getboolean("TEST")
 device = None
 
 if not TEST:
@@ -13,20 +33,15 @@ if not TEST:
 
     device = serial.Serial("/dev/serial0", 9600)
 
+app = App("serialOut", {})
 
-async def main():
-    sub = await utils.get_redis_client()
-    (pattern,) = await sub.subscribe(utils.config["CHANNELS"]["FC-OUT"])
-    loop = asyncio.get_event_loop()
-    while await pattern.wait_message():
-        data = await pattern.get()
-        utils.validate_json(json.loads(data))
-        message = data + "\n".encode()
-        if TEST:
-            logger.info(f"{message[0:10]}...")
-        else:
-            await loop.run_in_executor(None, device.write, message)
-
+@app.subscribe(config["CHANNELS"]["FC-OUT"], message_schema)
+async def receive_message(msg, redis, cache):
+    if TEST:
+        logger.info(f"{msg['data'][0:10]}...")
+    else:
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, device.write, json.dumps(msg))
 
 if __name__ == "__main__":
-    utils.run(main)
+    app.run({})

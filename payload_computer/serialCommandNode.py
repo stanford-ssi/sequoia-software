@@ -1,27 +1,39 @@
 import json
+import asyncio
 
-import utils
+from redis_wrapper.app import App
+from utils import validate_json, config, get_sequoia_logger
 
+message_schema = {
+        "type": "object",
+        "properties": {
+            "data": {
+                "type": "string"
+            },
+            "time": {
+                "type": "string"
+            }, 
+            "origin": {
+                "type": "string"
+            }, 
+            "command": {
+                "type": "string"
+            }
+        },
+        "required": ["data", "time", "origin", "command"]
+    }
 
-logger = utils.get_sequoia_logger()
+logger = get_sequoia_logger()
 
+app = App("serialCommand", {})
 
-async def main():
-    sub = await utils.get_redis_client()
-    pub = await utils.get_redis_client()
-    (pattern,) = await sub.subscribe(
-        utils.config["CHANNELS"]["FC-IN"]
-    )  # read all channels prefixed with `SOME_`
-
-    while await pattern.wait_message():
-        data = await pattern.get()
-        message = json.loads(data)
-        if message["command"] == utils.config["COMMANDS"]["TAKE-IMG"]:
-            logger.info(f"Got valid message {message}")
-            await pub.publish(utils.config["CHANNELS"]["CAM-COM"], data)
-        else:
-            logger.warning(f"Unknown serial command {message}")
-
+@app.subscribe(config["CHANNELS"]["FC-IN"], message_schema)
+async def receive_message(msg, redis, cache):
+    if msg["command"] == config["COMMANDS"]["TAKE-IMG"]:
+        logger.info(f"Got valid message {msg}")
+        return config["CHANNELS"]["CAM-COM"], msg
+    else:
+        logger.warning(f"Unknown serial command {msg}")
 
 if __name__ == "__main__":
-    utils.run(main)
+    app.run({})
